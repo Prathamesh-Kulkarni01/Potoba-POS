@@ -8,7 +8,7 @@ export function middleware(request) {
   const subdomainMatch = host.match(/^([a-zA-Z0-9-]+)\./);
   
   // Extract the subdomain if it exists; otherwise, set it to an empty string
-  const subdomain = subdomainMatch ? subdomainMatch[1] : '';
+  const subdomain = subdomainMatch &&host.split('.').length>2 ? subdomainMatch[1] : '';
   
   // Create a response that carries the subdomain info
   const response = NextResponse.next();
