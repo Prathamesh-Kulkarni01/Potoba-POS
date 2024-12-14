@@ -1,17 +1,23 @@
 "use client";
-
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
 const Page = () => {
-  const router = useRouter();
-  const subdomain =
-    typeof window !== "undefined" ? window.location.host.split(".")[0] : "";
-
   const [tenants, setTenants] = useState({}); // Stores tenant data
   const [tenantName, setTenantName] = useState("");
+  const [subdomain, setSubdomain] = useState("");
 
-  // Create a new tenant
+  // Fetch the subdomain from the custom header set by middleware
+  useEffect(() => {
+    const fetchSubdomain = async () => {
+      const response = await fetch("/");
+      const subdomainHeader = response.headers.get("x-subdomain");
+      console.log({ subdomainHeader });
+      setSubdomain(subdomainHeader || ""); // Default to empty string if no subdomain
+    };
+
+    fetchSubdomain();
+  }, []);
+
   const createTenant = () => {
     if (!tenantName || tenants[tenantName]) {
       alert("Tenant name is invalid or already exists.");
@@ -21,14 +27,6 @@ const Page = () => {
     setTenantName("");
   };
 
-  useEffect(() => {
-    // If subdomain exists, check if it's a valid tenant
-    if (subdomain && tenants[subdomain]) {
-      // router.push(`/tenant/${subdomain}`);
-    }
-  }, [subdomain, tenants, router]);
-
-  // Render a tenant-specific page
   const renderTenantPage = (tenant) => {
     return (
       <div>
@@ -39,7 +37,8 @@ const Page = () => {
     );
   };
 
-  // Render the main application
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "localhost:3000";
+
   return (
     <div style={{ fontFamily: "Arial, sans-serif", padding: "20px" }}>
       {subdomain ? (
@@ -61,9 +60,7 @@ const Page = () => {
             {Object.keys(tenants).length > 0 ? (
               Object.keys(tenants).map((name) => (
                 <li key={name}>
-                  <a href={`${`http://${name}.${window.location.host}`}`}>
-                    {name}
-                  </a>
+                  <a href={`http://${name}.${baseUrl}`}>{name}</a>
                 </li>
               ))
             ) : (
