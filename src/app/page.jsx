@@ -2,6 +2,7 @@
 import CustomGiftsMarketplace from "@/components/Home";
 import GiftMarketplace from "@/components/Home";
 import GiftWebsite from "@/components/Vendor";
+import SEOHead from "@/seo/Head";
 import { useState, useEffect } from "react";
 
 const Page = () => {
@@ -202,6 +203,7 @@ const Page = () => {
 
   return (
     <div className="">
+      <SEOHead/>
       {subdomain ? (
         <GiftWebsite name={subdomain}/> // Render tenant page if subdomain exists
       ) : (
