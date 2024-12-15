@@ -104,14 +104,14 @@ const GiftWebsite = ({ name }) => {
         <nav className="flex space-x-6 text-rose-800">
           <motion.button
             whileHover={{ scale: 1.1 }}
-            className="text-rose-900 hover:text-rose-800"
+            className="text-rose-600 hover:text-rose-800"
           >
             <Heart size={24} />
           </motion.button>
 
           <motion.button
             whileHover={{ scale: 1.1 }}
-            className="bg-rose-900 text-white px-4 py-2 rounded-full hover:bg-rose-700 flex items-center"
+            className="text-rose-600 text-white px-4 py-2 rounded-full hover:bg-rose-700 flex items-center"
           >
             <ShoppingCart size={20} className="mr-2" />{" "}
             <span className="hidden sm:block">Cart</span>
@@ -339,7 +339,7 @@ const SocialOrderButtons = () => {
           alt="WhatsApp Logo"
           className="w-6 h-6"
         />
-        <span>Order on WhatsApp</span>
+        <span>Order</span>
       </a>
 
       {/* Instagram Order Button */}
@@ -354,7 +354,7 @@ const SocialOrderButtons = () => {
           alt="Instagram Logo"
           className="w-6 h-6"
         />
-        <span>Follow on Instagram</span>
+        <span>Follow</span>
       </a>
 
      
