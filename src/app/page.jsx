@@ -1,6 +1,7 @@
 "use client";
 import CustomGiftsMarketplace from "@/components/Home";
 import GiftMarketplace from "@/components/Home";
+import GiftWebsite from "@/components/Vendor";
 import { useState, useEffect } from "react";
 
 const Page = () => {
@@ -202,7 +203,7 @@ const Page = () => {
   return (
     <div className="">
       {subdomain ? (
-        renderTenantPage(subdomain) // Render tenant page if subdomain exists
+        <GiftWebsite name={subdomain}/> // Render tenant page if subdomain exists
       ) : (
         // renderGiftHomepage() // Otherwise, render main e-commerce homepage
         <GiftMarketplace/>
