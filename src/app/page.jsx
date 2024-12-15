@@ -203,7 +203,7 @@ const Page = () => {
 
   return (
     <div className="">
-      <SEOHead/>
+
       {subdomain ? (
         <GiftWebsite name={subdomain}/> // Render tenant page if subdomain exists
       ) : (
