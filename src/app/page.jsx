@@ -1,4 +1,4 @@
-// "use client";
+"use client";
 // import CustomGiftsMarketplace from "@/components/Home";
 // import GiftMarketplace from "@/components/Home";
 // import GiftWebsite from "@/components/Vendor";
