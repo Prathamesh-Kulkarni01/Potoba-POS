@@ -19,6 +19,10 @@ const nextConfig = {
       }
     ]
    
+  
+  },
+  experimental: {
+    turboMode: false,
   },
   transpilePackages: ['geist']
 };
