@@ -20,7 +20,7 @@ const nextConfig = {
     ]
    
   },
-  transpilePackages: ['geist']
+  transpilePackages: ['geist'],
 };
 
 module.exports = nextConfig;
