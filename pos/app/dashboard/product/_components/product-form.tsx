@@ -50,7 +50,7 @@ const formSchema = z.object({
     message: 'Product name must be at least 2 characters.'
   }),
   category: z.string(),
-  price: z.number(),
+ 
   description: z.string().min(10, {
     message: 'Description must be at least 10 characters.'
   })
@@ -77,9 +77,43 @@ export default function ProductForm({
     values: defaultValues
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  const uploadImage = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'your_upload_preset'); // For Cloudinary or similar services
+  
+    // You can replace with your own storage endpoint if using AWS S3 or another service
+    const response = await axios.post('https://api.cloudinary.com/v1_1/your_cloud_name/upload', formData);
+    return response.data.secure_url; // This is the URL of the uploaded image
+  };
+
+  function onSubmit(values) {
+    console.log(values); // Check the values of the form
+  
+    // Assume image is an array containing the image details
+    const imageFile = values.image[0]; 
+  
+    // Upload the image and get the URL
+    uploadImage(imageFile).then(async (imageUrl) => {
+      // Once the image is uploaded, you can create the product object with the image URL
+      const productData = {
+        name: values.name,
+        category: values.category,
+        description: values.description,
+        imageUrl: imageUrl, // This is the URL of the uploaded image
+      };
+  
+      // Save the product details in the database
+      const res = await axios.post('/api/products', productData);
+  
+      if (res.status === 200) {
+        console.log('Product saved successfully');
+      } else {
+        console.error('Failed to save product');
+      }
+    });
   }
+  
 
   useEffect(() => {
     (async () => {
