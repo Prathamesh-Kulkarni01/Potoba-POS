@@ -24,7 +24,7 @@ const nextConfig = {
   experimental: {
     turboMode: false,
   },
-  transpilePackages: ['geist']
+  transpilePackages: ['geist'],
 };
 
 module.exports = nextConfig;
