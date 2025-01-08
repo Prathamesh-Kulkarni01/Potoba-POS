@@ -2,6 +2,8 @@
 import React from 'react';
 import ThemeProvider from './ThemeToggle/theme-provider';
 import { SessionProvider, SessionProviderProps } from 'next-auth/react';
+import { UserProvider } from '@/hooks/useUser'; // Import UserProvider
+
 export default function Providers({
   session,
   children
@@ -12,7 +14,9 @@ export default function Providers({
   return (
     <>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <SessionProvider session={session}>{children}</SessionProvider>
+        <SessionProvider session={session}>
+          <UserProvider>{children}</UserProvider> {/* Wrap children in UserProvider */}
+        </SessionProvider>
       </ThemeProvider>
     </>
   );

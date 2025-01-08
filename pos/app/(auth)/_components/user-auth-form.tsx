@@ -11,31 +11,46 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
 import { useState, useTransition } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, UseFormReturn } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
 import GithubSignInButton from './github-auth-button';
 import { useRouter } from 'next/navigation'; // for navigation
+import { useUser } from '@/hooks/useUser'; // Import useUser hook
+import { registerOwner } from '@/lib/api/auth';
+import { Autocomplete } from '@/components/ui/autocomplete';
+
+const loginRoles = [
+  { value: 'staff', label: 'Staff' },
+  { value: 'kitchen', label: 'Kitchen' },
+  { value: 'owner', label: 'Owner' }
+]; // Define login roles
+
+const registerRoles = [
+  { value: 'owner', label: 'Owner' }
+]; // Define register roles
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' }),
   password: z
     .string()
-    .min(2, { message: 'Password must be at least 6 characters' })
+    .min(6, { message: 'Password must be at least 6 characters' }),
+  role: z.string().nonempty({ message: 'Role is required' }) // Added role field
 });
 
 const registerSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' }),
   password: z
     .string()
-    .min(2, { message: 'Password must be at least 6 characters' }),
+    .min(6, { message: 'Password must be at least 6 characters' }),
   confirmPassword: z
     .string()
-    .min(2, { message: 'Password must be at least 6 characters' }),
-  name: z.string().min(2, { message: 'Name is required' })
+    .min(6, { message: 'Password must be at least 6 characters' }),
+  name: z.string().min(2, { message: 'Name is required' }),
+  role: z.string().nonempty({ message: 'Role is required' }) // Added role field
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -47,13 +62,16 @@ export default function UserAuthForm() {
   const [loading, startTransition] = useTransition();
   const [isRegistering, setIsRegistering] = useState(false); // State to toggle form view
   const router = useRouter();
-
-  const defaultLoginValues = { email: 'demo@gmail.com' };
+  const { status } = useSession();
+  const { updateToken } = useUser(); // Use useUser hook
+  
+  const defaultLoginValues = { email: 'demo@gmail.com', role: '' };
   const defaultRegisterValues = {
-    email: '',
-    password: '',
-    confirmPassword: '',
-    name: ''
+    email: 'test@example.com', // Dummy data for testing
+    password: 'password123', // Dummy data for testing
+    confirmPassword: 'password123', // Dummy data for testing
+    name: 'Test User', // Dummy data for testing
+    role: 'owner' // Dummy data for testing
   };
 
   const loginForm = useForm<LoginFormValues>({
@@ -67,26 +85,49 @@ export default function UserAuthForm() {
   });
 
   const handleLoginSubmit = async (data: LoginFormValues) => {
-    startTransition(() => {
-      signIn('credentials', {
+    startTransition(async () => {
+      const res = await signIn('credentials', {
+        redirect: false,
         ...data,
         callbackUrl: callbackUrl ?? '/dashboard'
       });
-      toast.success('Signed In Successfully!');
+     
+      if (res?.error) {
+        toast.error('Invalid credentials or error');
+      } else {
+        toast.success('Signed In Successfully!');
+        if (res && res.ok && res.token) {
+          updateToken(res.token); // Update token context
+        }
+        router.push('/restaurants/onboard');
+      }
     });
   };
 
+  if (status === "authenticated") {
+    router.push('/restaurants/onboard');
+    return null;
+  }
+
   const handleRegisterSubmit = async (data: RegisterFormValues) => {
-    // You can call an API to handle registration here
-    startTransition(() => {
-      signIn('credentials', {
-        ...data,
-        callbackUrl: callbackUrl ?? '/dashboard'
-      });
-      setIsRegistering(false);
-      toast.success('Signed In Successfully!');
-    });
-    // Switch back to login form after successful registration
+   
+    try {
+      const response = await registerOwner(data); // Use registerOwner method
+
+      if (!response) {
+        throw new Error('Registration failed');
+      }
+
+      toast.success('Registered Successfully!');
+      setIsRegistering(false); // Show login form after successful registration
+      loginForm.reset(); // Reset login form to clear any previous data
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error('An unknown error occurred');
+      }
+    }
   };
 
   // Toggle between Login and Register
@@ -96,7 +137,7 @@ export default function UserAuthForm() {
 
   return (
     <>
-      <Form {...(isRegistering ? registerForm : loginForm)}>
+      <Form {...(isRegistering ? registerForm as unknown as UseFormReturn<LoginFormValues> : loginForm)}>
         <form
           onSubmit={
             isRegistering
@@ -179,6 +220,24 @@ export default function UserAuthForm() {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={registerForm.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Role</FormLabel>
+                    <FormControl>
+                      <Autocomplete
+                        options={registerRoles}
+                        placeholder="Select your role"
+                        disabled={loading}
+                        onChange={(value) => field.onChange(value)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </>
           )}
 
@@ -221,6 +280,24 @@ export default function UserAuthForm() {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={loginForm.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Role</FormLabel>
+                    <FormControl>
+                      <Autocomplete
+                        options={loginRoles}
+                        placeholder="Select your role"
+                        disabled={loading}
+                        onChange={(value) => field.onChange(value)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </>
           )}
           <Button disabled={loading} className="ml-auto w-full" type="submit">
@@ -254,7 +331,7 @@ export default function UserAuthForm() {
             </>
           ) : (
             <>
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <button
                 className="font-semibold text-primary"
                 onClick={toggleForm}

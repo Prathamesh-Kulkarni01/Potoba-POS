@@ -1,8 +1,13 @@
-import { NextAuthConfig } from 'next-auth';
+import { NextAuthConfig, User as NextAuthUser } from 'next-auth';
 import CredentialProvider from 'next-auth/providers/credentials';
 import GithubProvider from 'next-auth/providers/github';
-import Restaurant from './lib/models/Restaurant';
-import connectDB from './lib/mongodb';
+import { loginOwner, loginStaff, loginKitchen, loginCustomer, loginAdmin } from './lib/api/auth';
+
+interface User extends NextAuthUser {
+  role: string;
+  selectedRestaurant?: string;
+  token?: string;
+}
 
 const authConfig: NextAuthConfig = {
   providers: [
@@ -18,84 +23,82 @@ const authConfig: NextAuthConfig = {
         password: {
           type: 'password',
         },
+        role: {
+          type: 'text',
+        },
       },
       async authorize(credentials, req) {
-        try {
-          const {email,password,name}=credentials
-
-          // Ensure MongoDB connection is established
-          await connectDB();
-
-          // Check if the user (restaurant) exists in the DB
-          let user = await Restaurant.findOne({ email }).catch((err) => {
-            console.error('Error during findOne:', err);
-            return null;
-          });
-
-          if (!user) {
-            // If the user doesn't exist, create a new restaurant profile
-            const newRestaurant = new Restaurant({
-              email,
-              name, // Default to email for the name
-              password, // Hash the password before saving in a real-world app
-            });
-
-            await newRestaurant.save().catch((err) => {
-              console.error('Error during restaurant creation:', err);
-              return null;
-            });
-
-            // Create a user object to return
-            user = {
-              id: newRestaurant._id.toString(), // MongoDB _id used as a unique user ID
-              name: newRestaurant.name,
-              email: newRestaurant.email,
-              onboard: false, // Assuming onboarding is false by default
-            };
-          }
-
-          return {
-            id: user._id.toString(), // Always return a unique user ID
-            name: user.name,
-            email: user.email,
-            onboard: user.onboard,
-          };
-        } catch (error) {
-          console.error('Authorization error:', error);
-          return null;
+        console.log(credentials);
+        if (!credentials) {
+          throw new Error('No credentials provided');
         }
+        const { email, password, role } = credentials;
+        if (!email || !password || !role) {
+          throw new Error('Missing email, password, or role');
+        }
+
+        let response;
+        switch (role) {
+          case 'owner':
+            response = await loginOwner({ email, password });
+            break;
+          case 'staff':
+            response = await loginStaff({ email, password });
+            break;
+          case 'kitchen':
+            response = await loginKitchen({ email, password });
+            break;
+          case 'customer':
+            response = await loginCustomer({ email, password });
+            break;
+          case 'admin':
+            response = await loginAdmin({ email, password });
+            break;
+          default:
+            throw new Error('Invalid role');
+        }
+                if (response) {
+          const { token, user } = await response;
+          user.token = token; // Attach token to user object
+          return user;
+        }
+        return null;
       },
     }),
   ],
   pages: {
     signIn: '/', // Custom sign-in page
   },
+  session: {
+    strategy: "jwt", // Use JWT strategy instead of sessions
+  },
   callbacks: {
-    // This callback is called whenever a JWT token is created
     async jwt({ token, user }) {
       if (user) {
-        // Store the user ID and other necessary data in the token
         token.id = user.id;
         token.email = user.email;
-        token.onboard = user.onboard;
+        token.role = (user as User).role;
+        token.selectedRestaurant = (user as User).selectedRestaurant || null;
+        token.token = (user as User).token; // Store the token in the JWT
       }
       return token;
     },
-    // This callback is called when a session is created
-    async session({ session, token }) {
-      // Add user data from the JWT token to the session
-      session.user.id = token.id; // Ensure `id` is part of the session
-      session.user.email = token.email;
-      session.user.onboard = token.onboard;
-
-      // Handle redirection if the user has not completed onboarding
-      if (!token.onboard) {
-        session.redirectTo = '/onboard-restaurant';
-      }
-
+    async session({ session, token }: { session: any, token: any }) {
+      session.user.id = token.id as string;
+      session.user.email = token.email ?? '';
+      session.user.role = token.role;
+      session.user.selectedRestaurant = token.selectedRestaurant || null;
+      session.user.token = token.token; // Add token to session
       return session;
     },
   },
+  // events: {
+  //   async updateUser({ user }) {
+  //     // Update session when user updates
+  //     await updateSessionUser(user);
+  //   },
+  // },
+  secret: process.env.AUTH_SECRET,
 };
 
 export default authConfig;
