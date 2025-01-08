@@ -31,7 +31,17 @@ temp/
 
 # Ignore OS generated files
 .DS_Store
-Thumbs.dbnode_modules
+Thumbs.db// ...existing code...
+client/env
+client/node_modules
+client/pnpm-lock.yaml
+server/env
+server/node_modules
+server/pnpm-lock.yaml
+webapp/env
+webapp/node_modules
+webapp/pnpm-lock.yaml
+// ...existing code...
 // ...existing code...
 client/env
 client/node_modules
