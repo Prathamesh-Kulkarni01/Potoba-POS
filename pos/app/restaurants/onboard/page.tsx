@@ -1,31 +1,45 @@
-"use client"
+/* eslint-disable no-console */
+'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { listRestaurants, createRestaurant } from '@/lib/api/restaurants';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardFooter
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem } from '@/components/ui/select';
-import { Dialog, DialogOverlay, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { updateProfile } from '@/lib/api/auth';
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { useSession } from 'next-auth/react';
-import { PlusCircle, Store, MapPin, Clock, Users, TrendingUp, ChefHat, Settings, Phone } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+import {
+  PlusCircle,
+  Store,
+  Users,
+  TrendingUp,
+  Settings,
+  IndianRupeeIcon
+} from 'lucide-react';
+
+import {
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { SelectTrigger, SelectValue } from '@/components/ui/select';
+import Image from 'next/image';
 
 const RestaurantDashboard = () => {
-  const router = useRouter();
+  // const router = useRouter();
   const { data: session } = useSession();
-  const [userId, setUserId] = useState(session?.user?.id);
-  
+  const userId = session?.user?.id;
+
   // Form states
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
@@ -33,7 +47,7 @@ const RestaurantDashboard = () => {
   const [contactNumber, setContactNumber] = useState('');
   const [businessHoursOpen, setBusinessHoursOpen] = useState('');
   const [businessHoursClose, setBusinessHoursClose] = useState('');
-  
+
   // UI states
   const [restaurants, setRestaurants] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -45,8 +59,12 @@ const RestaurantDashboard = () => {
       if (userId) {
         try {
           const data = await listRestaurants();
+          if (data.length > 3) {
+            data.length = 3;
+          }
           setRestaurants(data);
         } catch (error) {
+          // eslint-disable-next-line no-console
           console.error('Error fetching restaurants:', error);
         }
       }
@@ -66,7 +84,7 @@ const RestaurantDashboard = () => {
   };
 
   // Handle restaurant creation
-  const handleCreateRestaurant = async (e) => {
+  const handleCreateRestaurant = async (e: any) => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -78,7 +96,7 @@ const RestaurantDashboard = () => {
         status,
         contactNumber,
         businessHoursOpen,
-        businessHoursClose,
+        businessHoursClose
       };
 
       const res = await createRestaurant(restaurantData);
@@ -87,7 +105,7 @@ const RestaurantDashboard = () => {
         // Refresh restaurants list
         const updatedRestaurants = await listRestaurants();
         setRestaurants(updatedRestaurants);
-        
+
         // Close dialog and reset form
         setIsDialogOpen(false);
         resetForm();
@@ -103,34 +121,39 @@ const RestaurantDashboard = () => {
   };
 
   // Handle restaurant selection
-  const handleSelectRestaurant = async (restaurantId) => {
-    if (!userId) return;
+  const handleSelectRestaurant = async (restaurantId: string) => {
+    if (userId) {
+      try {
+        const res = await updateProfile(userId, {
+          selectedRestaurant: restaurantId
+        });
 
-    try {
-      const res = await updateProfile(userId, { selectedRestaurant: restaurantId });
-      
-      if (res.ok) {
-        // Refresh restaurants list to update UI
-        const updatedRestaurants = await listRestaurants();
-        setRestaurants(updatedRestaurants);
-      } else {
-        throw new Error('Failed to select restaurant');
+        if (res.ok) {
+          // Refresh restaurants list to update UI
+          const updatedRestaurants = await listRestaurants();
+          setRestaurants(updatedRestaurants);
+        } else {
+          throw new Error('Failed to select restaurant');
+        }
+      } catch (error) {
+        console.error('Error selecting restaurant:', error);
+        alert('Error selecting restaurant. Please try again.');
       }
-    } catch (error) {
-      console.error('Error selecting restaurant:', error);
-      alert('Error selecting restaurant. Please try again.');
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white">
       {/* Hero Section */}
-      <div className="bg-orange-900 text-white py-16">
+      <div className="bg-orange-500 py-8 text-white">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl">
-            <h1 className="text-5xl font-bold mb-4">Welcome to Your Restaurant Hub</h1>
-            <p className="text-xl text-orange-100 mb-8">Manage all your restaurants in one place. Streamline operations, boost revenue, and deliver exceptional dining experiences.</p>
-            <Button 
+            <h1 className="mb-4 text-5xl font-bold">Welcome to Potoba</h1>
+            <p className="mb-8 text-xl text-orange-100">
+              Manage all your restaurants in one place. Streamline operations,
+              boost revenue, and deliver exceptional dining experiences.
+            </p>
+            <Button
               className="bg-white text-orange-900 hover:bg-orange-100"
               onClick={() => setIsDialogOpen(true)}
               disabled={!userId}
@@ -142,20 +165,63 @@ const RestaurantDashboard = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto overflow-auto px-4 py-8">
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <Card className="bg-white/80 backdrop-blur">
+        {/* Stats Cards with Animation */}
+        <div className="mb-12 grid grid-cols-1 gap-6 md:grid-cols-4">
+          <Card className="bg-white/80 backdrop-blur transition-all hover:shadow-lg">
             <CardContent className="pt-6">
               <div className="flex items-center space-x-4">
-                <div className="p-3 bg-green-100 rounded-lg">
+                <div className="rounded-lg bg-green-100 p-3">
                   <Store className="h-6 w-6 text-green-600" />
                 </div>
                 <div>
                   <p className="text-sm text-zinc-600">Active Restaurants</p>
                   <h3 className="text-2xl font-bold text-zinc-900">
-                    {restaurants.filter(r => r.status === 'open').length}
+                    {restaurants.filter((r) => r.status === 'open').length}
                   </h3>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/80 backdrop-blur transition-all hover:shadow-lg">
+            <CardContent className="pt-6">
+              <div className="flex items-center space-x-4">
+                <div className="rounded-lg bg-blue-100 p-3">
+                  <Users className="h-6 w-6 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-zinc-600">Total Staff</p>
+                  <h3 className="text-2xl font-bold text-zinc-900">124</h3>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/80 backdrop-blur transition-all hover:shadow-lg">
+            <CardContent className="pt-6">
+              <div className="flex items-center space-x-4">
+                <div className="rounded-lg bg-yellow-100 p-3">
+                  <IndianRupeeIcon className="h-6 w-6 text-yellow-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-zinc-600">Monthly Revenue</p>
+                  <h3 className="text-2xl font-bold text-zinc-900">₹45.2K</h3>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/80 backdrop-blur transition-all hover:shadow-lg">
+            <CardContent className="pt-6">
+              <div className="flex items-center space-x-4">
+                <div className="rounded-lg bg-purple-100 p-3">
+                  <TrendingUp className="h-6 w-6 text-purple-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-zinc-600">Growth Rate</p>
+                  <h3 className="text-2xl font-bold text-zinc-900">+12.5%</h3>
                 </div>
               </div>
             </CardContent>
@@ -164,68 +230,67 @@ const RestaurantDashboard = () => {
 
         {/* Restaurants Grid */}
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-zinc-900 mb-2">Your Restaurants</h2>
-          <p className="text-zinc-600 mb-6">Select a restaurant to manage operations</p>
+          <h2 className="mb-2 text-3xl font-bold text-zinc-900">
+            Your Restaurants
+          </h2>
+          <p className="mb-6 text-zinc-600">
+            Select a restaurant to manage operations
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="flex  gap-6 overflow-auto">
           {/* Add New Restaurant Card */}
-          <Card 
-            className="group hover:shadow-xl transition-all duration-300 border-2 border-dashed border-zinc-300 bg-white/50 hover:border-orange-300 cursor-pointer"
+          <Card
+            className="group w-[340px] cursor-pointer border-2 border-dashed border-zinc-300 bg-white/50 transition-all duration-300 hover:border-orange-300 hover:shadow-xl"
             onClick={() => setIsDialogOpen(true)}
           >
-            <CardContent className="flex flex-col items-center justify-center h-full min-h-[400px]">
-              <div className="w-20 h-20 rounded-full bg-orange-100 flex items-center justify-center mb-6 group-hover:bg-orange-200 transition-colors duration-300">
+            <CardContent className="flex h-full min-h-[300px] flex-col items-center justify-center">
+              <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-orange-100 transition-colors duration-300 group-hover:bg-orange-200">
                 <PlusCircle className="h-10 w-10 text-orange-600" />
               </div>
-              <h3 className="text-2xl font-semibold text-zinc-900 mb-3">Add New Restaurant</h3>
-              <p className="text-zinc-600 text-center max-w-xs">Start managing a new location and grow your business</p>
+              <h3 className="mb-3 text-2xl font-semibold text-zinc-900">
+                Add New Restaurant
+              </h3>
+              <p className="max-w-xs text-center text-zinc-600">
+                Start managing a new location and grow your business
+              </p>
             </CardContent>
           </Card>
 
           {/* Existing Restaurant Cards */}
           {restaurants.map((restaurant) => (
-            <Card 
-              key={restaurant.id} 
-              className="hover:shadow-xl transition-all duration-300 group bg-white"
+            <Card
+              key={restaurant.id!}
+              className="group h-[300px] w-[340px] overflow-hidden bg-white transition-all duration-300 hover:shadow-xl"
               onClick={() => handleSelectRestaurant(restaurant.id)}
             >
-              <CardHeader className="p-0 relative">
-                <img
-                  src="/api/placeholder/400/200"
-                  alt={restaurant.name}
-                  className="w-full h-48 object-cover rounded-t-lg group-hover:brightness-90 transition-all"
+              <CardHeader className="relative p-0 ">
+                <Image
+                  src="https://plus.unsplash.com/premium_photo-1661883237884-263e8de8869b?q=80&w=2089&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                  alt={restaurant.name!}
+                  width={200}
+                  height={200}
+                  className="h-[180px] w-full rounded-t-lg object-cover transition-all group-hover:brightness-90"
                 />
-                <div className="absolute top-4 right-4">
-                  <Button variant="secondary" size="icon" className="bg-white/90 hover:bg-white">
+                <div className="absolute right-2 top-2">
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    className="bg-white/90 hover:bg-white"
+                  >
                     <Settings className="h-4 w-4" />
                   </Button>
                 </div>
               </CardHeader>
-              <CardContent className="pt-6">
-                <CardTitle className="text-2xl mb-2">{restaurant.name}</CardTitle>
-                <CardDescription className="text-zinc-600 mb-4">
-                  {restaurant.status}
-                </CardDescription>
-                <div className="space-y-3">
-                  <div className="flex items-center text-zinc-600">
-                    <MapPin className="h-4 w-4 mr-2 text-orange-600" />
-                    <span className="text-sm">{restaurant.address}</span>
-                  </div>
-                  <div className="flex items-center text-zinc-600">
-                    <Clock className="h-4 w-4 mr-2 text-orange-600" />
-                    <span className="text-sm">{restaurant.businessHoursOpen} - {restaurant.businessHoursClose}</span>
-                  </div>
-                  <div className="flex items-center text-zinc-600">
-                    <Phone className="h-4 w-4 mr-2 text-orange-600" />
-                    <span className="text-sm">{restaurant.contactNumber}</span>
-                  </div>
-                </div>
+              <CardContent className="pb-3 pt-2">
+                <h3 className="mb-2 text-center text-2xl font-semibold text-zinc-900">
+                  {restaurant.name}
+                </h3>
               </CardContent>
               <CardFooter className="bg-zinc-50">
                 <Button className="w-full bg-orange-600 hover:bg-orange-700">
                   <Store className="mr-2 h-4 w-4" />
-                  Select Restaurant
+                  Manage Restaurant
                 </Button>
               </CardFooter>
             </Card>
@@ -239,7 +304,8 @@ const RestaurantDashboard = () => {
           <DialogHeader>
             <DialogTitle>Create New Restaurant</DialogTitle>
             <DialogDescription>
-              Enter your restaurant details below to get started with management.
+              Enter your restaurant details below to get started with
+              management.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleCreateRestaurant}>
@@ -310,14 +376,18 @@ const RestaurantDashboard = () => {
               </div>
             </div>
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => {
-                setIsDialogOpen(false);
-                resetForm();
-              }}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setIsDialogOpen(false);
+                  resetForm();
+                }}
+              >
                 Cancel
               </Button>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="bg-orange-600 hover:bg-orange-700"
                 disabled={isLoading}
               >
