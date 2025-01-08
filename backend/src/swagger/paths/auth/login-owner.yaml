@@ -1,0 +1,48 @@
+post:
+  tags:
+    - Authentication
+  summary: Owner login
+  description: Authenticate as restaurant owner
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - email
+            - password
+          properties:
+            email:
+              type: string
+              format: email
+              example: "owner@restaurant.com"
+            password:
+              type: string
+              format: password
+              example: "password123"
+  responses:
+    '200':
+      description: Login successful
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+                example: "eyJhbGciOiJIUzI1NiIs..."
+              user:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  email:
+                    type: string
+                  role:
+                    type: string
+                    enum: [owner]
+    '401':
+      description: Invalid credentials

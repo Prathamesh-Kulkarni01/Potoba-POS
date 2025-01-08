@@ -1,0 +1,27 @@
+type: object
+required:
+  - name
+  - address
+properties:
+  id:
+    type: string
+    format: uuid
+  name:
+    type: string
+    example: "Le Petit Bistro"
+  address:
+    type: string
+    example: "123 Main St"
+  status:
+    type: string
+    enum: [open, closed]
+    default: closed
+  businessHours:
+    type: object
+    properties:
+      open:
+        type: string
+        example: "09:00"
+      close:
+        type: string
+        example: "22:00"

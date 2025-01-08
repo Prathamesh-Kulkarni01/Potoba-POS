@@ -1,0 +1,29 @@
+get:
+  tags:
+    - Customer
+  summary: Get menu for table
+  parameters:
+    - in: path
+      name: restaurantId
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: tableId
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Menu for table
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              table:
+                $ref: '../../schemas/table.yaml'
+              menu:
+                type: array
+                items:
+                  $ref: '../../schemas/menu-item.yaml'

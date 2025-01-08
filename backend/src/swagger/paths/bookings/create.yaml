@@ -1,0 +1,19 @@
+post:
+  tags:
+    - Bookings
+  summary: Create booking
+  security:
+    - BearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../schemas/booking.yaml'
+  responses:
+    '201':
+      description: Booking created successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/booking.yaml'

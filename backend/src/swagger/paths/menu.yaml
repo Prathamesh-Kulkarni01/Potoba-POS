@@ -1,0 +1,195 @@
+/menu/{restaurantId}/items:
+  post:
+    tags:
+      - Menu
+    summary: Create a menu item
+    description: Create a new menu item for a specific restaurant
+    security:
+      - BearerAuth: []
+    parameters:
+      - in: path
+        name: restaurantId
+        required: true
+        schema:
+          type: string
+        description: ID of the restaurant
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+              - description
+              - price
+              - category
+            properties:
+              name:
+                type: string
+                example: "Margherita Pizza"
+              description:
+                type: string
+                example: "Classic Italian pizza with tomatoes and mozzarella"
+              price:
+                type: number
+                example: 12.99
+              category:
+                type: string
+                example: "Pizza"
+              isVegetarian:
+                type: boolean
+                example: true
+              spicyLevel:
+                type: integer
+                minimum: 0
+                maximum: 3
+                example: 1
+    responses:
+      '201':
+        description: Menu item created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/menuItem.yaml#/MenuItem'
+      '400':
+        $ref: '../components/responses/error.yaml#/400'
+      '401':
+        $ref: '../components/responses/error.yaml#/401'
+      '403':
+        $ref: '../components/responses/error.yaml#/403'
+
+  get:
+    tags:
+      - Menu
+    summary: Get menu items
+    description: Retrieve all menu items for a specific restaurant
+    security:
+      - BearerAuth: []
+    parameters:
+      - in: path
+        name: restaurantId
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: category
+        schema:
+          type: string
+        description: Filter by category
+      - in: query
+        name: priceRange
+        schema:
+          type: object
+          properties:
+            min:
+              type: number
+            max:
+              type: number
+        description: Filter by price range
+    responses:
+      '200':
+        description: List of menu items
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '../components/schemas/menuItem.yaml#/MenuItem'
+      '401':
+        $ref: '../components/responses/error.yaml#/401'
+
+/menu/{restaurantId}/items/{itemId}:
+  put:
+    tags:
+      - Menu
+    summary: Update a menu item
+    description: Update an existing menu item
+    security:
+      - BearerAuth: []
+    parameters:
+      - in: path
+        name: restaurantId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: itemId
+        required: true
+        schema:
+          type: string
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/menuItem.yaml#/MenuItem'
+    responses:
+      '200':
+        description: Menu item updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/menuItem.yaml#/MenuItem'
+      '404':
+        $ref: '../components/responses/error.yaml#/404'
+
+  delete:
+    tags:
+      - Menu
+    summary: Delete a menu item
+    description: Delete an existing menu item
+    security:
+      - BearerAuth: []
+    parameters:
+      - in: path
+        name: restaurantId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: itemId
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Menu item deleted successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Menu item deleted successfully"
+      '404':
+        $ref: '../components/responses/error.yaml#/404'
+
+  get:
+    tags:
+      - Menu
+    summary: Get a menu item
+    description: Retrieve details of a specific menu item
+    security:
+      - BearerAuth: []
+    parameters:
+      - in: path
+        name: restaurantId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: itemId
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Menu item details
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/menuItem.yaml#/MenuItem'
+      '404':
+        $ref: '../components/responses/error.yaml#/404'

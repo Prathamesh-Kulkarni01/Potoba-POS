@@ -1,0 +1,22 @@
+type: object
+required:
+  - tableId
+  - items
+properties:
+  tableId:
+    type: string
+  items:
+    type: array
+    items:
+      type: object
+      required:
+        - menuItemId
+        - quantity
+      properties:
+        menuItemId:
+          type: string
+        quantity:
+          type: integer
+          minimum: 1
+  specialInstructions:
+    type: string

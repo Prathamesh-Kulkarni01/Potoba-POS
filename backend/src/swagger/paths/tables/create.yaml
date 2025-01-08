@@ -1,0 +1,25 @@
+post:
+  tags:
+    - Tables
+  summary: Create table
+  security:
+    - BearerAuth: []
+  parameters:
+    - in: path
+      name: restaurantId
+      required: true
+      schema:
+        type: string
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../schemas/table.yaml'
+  responses:
+    '201':
+      description: Table created
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/table.yaml'

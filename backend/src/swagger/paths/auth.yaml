@@ -1,0 +1,519 @@
+auth/register/owner:
+  post:
+    tags:
+      - Authentication
+    summary: Register restaurant owner
+    description: Create a new restaurant owner account
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+              - email
+              - password
+            properties:
+              name:
+                type: string
+                example: "John Doe"
+              email:
+                type: string
+                format: email
+                example: "owner@restaurant.com"
+              password:
+                type: string
+                format: password
+                example: "password123"
+    responses:
+      '201':
+        description: Owner registered successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "User registered successfully"
+
+auth/register/staff:
+  post:
+    tags:
+      - Authentication
+    summary: Register staff member
+    description: Create a new staff account (requires owner/admin authentication)
+    security:
+      - BearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+              - email
+              - password
+              - restaurantId
+            properties:
+              name:
+                type: string
+                example: "Jane Smith"
+              email:
+                type: string
+                format: email
+                example: "staff@restaurant.com"
+              password:
+                type: string
+                format: password
+                example: "password123"
+              restaurantId:
+                type: string
+                example: "507f1f77bcf86cd799439011"
+              staffDetails:
+                type: object
+                properties:
+                  position:
+                    type: string
+                    example: "Server"
+                  schedule:
+                    type: string
+                    example: "Morning Shift"
+    responses:
+      '201':
+        description: Staff member registered successfully
+      '401':
+        description: Unauthorized
+      '403':
+        description: Forbidden - Requires owner/admin role
+
+auth/register/kitchen:
+  post:
+    tags:
+      - Authentication
+    summary: Register kitchen staff
+    description: Create a new kitchen staff account (requires owner/admin authentication)
+    security:
+      - BearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+              - email
+              - password
+              - restaurantId
+            properties:
+              name:
+                type: string
+                example: "Chef Mike"
+              email:
+                type: string
+                format: email
+                example: "kitchen@restaurant.com"
+              password:
+                type: string
+                format: password
+                example: "password123"
+              restaurantId:
+                type: string
+                example: "507f1f77bcf86cd799439011"
+              staffDetails:
+                type: object
+                properties:
+                  position:
+                    type: string
+                    example: "Head Chef"
+                  schedule:
+                    type: string
+                    example: "Evening Shift"
+    responses:
+      '201':
+        description: Kitchen staff registered successfully
+      '401':
+        description: Unauthorized
+      '403':
+        description: Forbidden - Requires owner/admin role
+
+auth/register/customer:
+  post:
+    tags:
+      - Authentication
+    summary: Register customer
+    description: Create a new customer account
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+              - email
+              - password
+            properties:
+              name:
+                type: string
+                example: "Alice Brown"
+              email:
+                type: string
+                format: email
+                example: "customer@example.com"
+              password:
+                type: string
+                format: password
+                example: "password123"
+              preferences:
+                type: array
+                items:
+                  type: string
+                example: ["vegetarian", "spicy"]
+              allergies:
+                type: array
+                items:
+                  type: string
+                example: ["nuts", "dairy"]
+    responses:
+      '201':
+        description: Customer registered successfully
+
+auth/register/admin:
+  post:
+    tags:
+      - Authentication
+    summary: Register admin
+    description: Create a new admin account (requires existing admin authentication)
+    security:
+      - BearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+              - email
+              - password
+            properties:
+              name:
+                type: string
+                example: "Admin User"
+              email:
+                type: string
+                format: email
+                example: "admin@restaurant.com"
+              password:
+                type: string
+                format: password
+                example: "password123"
+    responses:
+      '201':
+        description: Admin registered successfully
+      '401':
+        description: Unauthorized
+      '403':
+        description: Forbidden - Requires admin role
+
+auth/login/owner:
+  post:
+    tags:
+      - Authentication
+    summary: Owner login
+    description: Authenticate as restaurant owner
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: string
+                format: email
+                example: "owner@restaurant.com"
+              password:
+                type: string
+                format: password
+                example: "password123"
+    responses:
+      '200':
+        description: Login successful
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  example: "eyJhbGciOiJIUzI1NiIs..."
+                user:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    email:
+                      type: string
+                    role:
+                      type: string
+                      enum: [owner]
+      '401':
+        description: Invalid credentials
+
+auth/login/staff:
+  post:
+    tags:
+      - Authentication
+    summary: Staff login
+    description: Authenticate as staff member
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: string
+                format: email
+                example: "staff@restaurant.com"
+              password:
+                type: string
+                format: password
+                example: "password123"
+    responses:
+      '200':
+        description: Login successful
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                user:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    email:
+                      type: string
+                    role:
+                      type: string
+                      enum: [staff]
+                    selectedRestaurant:
+                      type: string
+      '401':
+        description: Invalid credentials
+
+auth/login/kitchen:
+  post:
+    tags:
+      - Authentication
+    summary: Kitchen staff login
+    description: Authenticate as kitchen staff
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: string
+                format: email
+                example: "kitchen@restaurant.com"
+              password:
+                type: string
+                format: password
+                example: "password123"
+    responses:
+      '200':
+        description: Login successful
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                user:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    email:
+                      type: string
+                    role:
+                      type: string
+                      enum: [kitchen]
+                    selectedRestaurant:
+                      type: string
+      '401':
+        description: Invalid credentials
+
+auth/login/customer:
+  post:
+    tags:
+      - Authentication
+    summary: Customer login
+    description: Authenticate as customer
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: string
+                format: email
+                example: "customer@example.com"
+              password:
+                type: string
+                format: password
+                example: "password123"
+    responses:
+      '200':
+        description: Login successful
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                user:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    email:
+                      type: string
+                    role:
+                      type: string
+                      enum: [customer]
+      '401':
+        description: Invalid credentials
+
+auth/login/admin:
+  post:
+    tags:
+      - Authentication
+    summary: Admin login
+    description: Authenticate as admin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: string
+                format: email
+                example: "admin@restaurant.com"
+              password:
+                type: string
+                format: password
+                example: "password123"
+    responses:
+      '200':
+        description: Login successful
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                user:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    email:
+                      type: string
+                    role:
+                      type: string
+                      enum: [admin]
+      '401':
+        description: Invalid credentials
+
+auth/profile:
+  get:
+    tags:
+      - Authentication
+    summary: Get user profile
+    description: Retrieve the authenticated user's profile
+    security:
+      - BearerAuth: []
+    responses:
+      '200':
+        description: User profile retrieved successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                email:
+                  type: string
+                role:
+                  type: string
+                  enum: [owner, staff, kitchen, customer, admin]
+                selectedRestaurant:
+                  type: string
+                staffDetails:
+                  type: object
+                  properties:
+                    position:
+                      type: string
+                    schedule:
+                      type: string
+                customerDetails:
+                  type: object
+                  properties:
+                    preferences:
+                      type: array
+                      items:
+                        type: string
+                    allergies:
+                      type: array
+                      items:
+                        type: string
+      '401':
+        description: Unauthorized

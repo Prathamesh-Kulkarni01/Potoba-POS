@@ -1,0 +1,32 @@
+type: object
+properties:
+  id:
+    type: string
+  name:
+    type: string
+  email:
+    type: string
+  role:
+    type: string
+    enum: [owner, staff, kitchen, customer, admin]
+  selectedRestaurant:
+    type: string
+    description: Restaurant ID (for staff and kitchen roles)
+  staffDetails:
+    type: object
+    properties:
+      position:
+        type: string
+      schedule:
+        type: string
+  customerDetails:
+    type: object
+    properties:
+      preferences:
+        type: array
+        items:
+          type: string
+      allergies:
+        type: array
+        items:
+          type: string

@@ -1,0 +1,32 @@
+post:
+  tags:
+    - Authentication
+  summary: Kitchen staff login
+  description: Authenticate as kitchen staff
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - email
+            - password
+          properties:
+            email:
+              type: string
+              format: email
+              example: "kitchen@restaurant.com"
+            password:
+              type: string
+              format: password
+              example: "password123"
+  responses:
+    '200':
+      description: Login successful
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/auth-response.yaml'
+    '401':
+      description: Invalid credentials

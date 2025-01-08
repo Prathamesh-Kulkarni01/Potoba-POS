@@ -1,0 +1,45 @@
+MenuItem:
+  type: object
+  required:
+    - name
+    - description
+    - price
+    - category
+  properties:
+    id:
+      type: string
+      format: uuid
+      example: "550e8400-e29b-41d4-a716-446655440000"
+    name:
+      type: string
+      minLength: 2
+      example: "Margherita Pizza"
+    description:
+      type: string
+      minLength: 10
+      example: "Classic Italian pizza with tomatoes and mozzarella"
+    price:
+      type: number
+      minimum: 0
+      example: 12.99
+    category:
+      type: string
+      minLength: 2
+      example: "Pizza"
+    isVegetarian:
+      type: boolean
+      example: true
+    spicyLevel:
+      type: integer
+      minimum: 0
+      maximum: 3
+      example: 1
+    restaurant:
+      type: string
+      format: uuid
+    createdAt:
+      type: string
+      format: date-time
+    updatedAt:
+      type: string
+      format: date-time

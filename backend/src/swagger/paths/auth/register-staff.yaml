@@ -1,0 +1,37 @@
+post:
+  tags:
+    - Authentication
+  summary: Register staff member
+  security:
+    - BearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - name
+            - email
+            - password
+            - restaurantId
+          properties:
+            name:
+              type: string
+              example: "Jane Smith"
+            email:
+              type: string
+              format: email
+            password:
+              type: string
+              format: password
+            restaurantId:
+              type: string
+            position:
+              type: string
+              example: "Server"
+  responses:
+    '201':
+      description: Staff registered successfully
+    '403':
+      description: Forbidden - Requires owner/admin role

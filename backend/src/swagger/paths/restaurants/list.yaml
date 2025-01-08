@@ -1,0 +1,35 @@
+get:
+  tags:
+    - Restaurants
+  summary: List all restaurants
+  security:
+    - BearerAuth: []
+  responses:
+    '200':
+      description: List of restaurants
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../schemas/restaurant.yaml'
+
+post:
+  tags:
+    - Restaurants
+  summary: Create a restaurant
+  security:
+    - BearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../schemas/restaurant.yaml'
+  responses:
+    '201':
+      description: Restaurant created
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/restaurant.yaml'

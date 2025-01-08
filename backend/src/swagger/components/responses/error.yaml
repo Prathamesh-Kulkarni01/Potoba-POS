@@ -1,0 +1,30 @@
+'400':
+  description: Bad Request
+  content:
+    application/json:
+      schema:
+        $ref: '../../schemas/error.yaml'
+'401':
+  description: Unauthorized
+  content:
+    application/json:
+      schema:
+        $ref: '../../schemas/error.yaml'
+'403':
+  description: Forbidden
+  content:
+    application/json:
+      schema:
+        $ref: '../../schemas/error.yaml'
+'404':
+  description: Not Found
+  content:
+    application/json:
+      schema:
+        $ref: '../../schemas/error.yaml'
+'500':
+  description: Internal Server Error
+  content:
+    application/json:
+      schema:
+        $ref: '../../schemas/error.yaml'

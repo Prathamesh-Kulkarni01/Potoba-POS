@@ -1,0 +1,19 @@
+type: object
+required:
+  - tableNumber
+  - capacity
+properties:
+  id:
+    type: string
+    format: uuid
+  tableNumber:
+    type: string
+    example: "A1"
+  capacity:
+    type: integer
+    minimum: 1
+    example: 4
+  status:
+    type: string
+    enum: [available, occupied, reserved]
+    default: available

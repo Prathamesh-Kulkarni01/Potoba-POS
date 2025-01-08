@@ -1,0 +1,38 @@
+components:
+  schemas:
+    Restaurant:
+      type: object
+      required:
+        - name
+        - address
+      properties:
+        name:
+          type: string
+          example: "The Grand Restaurant"
+        address:
+          type: string
+          example: "123 Main St, City"
+        status:
+          type: string
+          enum: [open, closed]
+          default: closed
+          example: "open"
+        contactNumber:
+          type: string
+          example: "+1-555-123-4567"
+        businessHours:
+          type: object
+          properties:
+            open:
+              type: string
+              example: "09:00"
+            close:
+              type: string
+              example: "22:00"
+    
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Restaurant not found"

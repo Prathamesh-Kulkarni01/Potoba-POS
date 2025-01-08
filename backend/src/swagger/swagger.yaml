@@ -1,0 +1,129 @@
+openapi: 3.0.0
+info:
+  title: Restaurant Management API
+  description: |
+    # Restaurant Management System API
+
+    ## Overview
+    This API provides comprehensive functionality for managing restaurants, including menu management, table management, order processing, and customer interactions.
+
+    ## Authentication
+    All protected endpoints require JWT authentication using Bearer token:
+    ```
+    Authorization: Bearer <token>
+    ```
+
+    ## User Roles
+    - **Owner**: Full access to restaurant management
+    - **Staff**: Access to orders and table management
+    - **Kitchen**: Access to order management
+    - **Customer**: Access to placing orders and viewing status
+    - **Admin**: System-wide access and management
+
+    ## Features
+    1. Restaurant Management
+    2. Menu Management
+    3. Table Management
+    4. Order Processing
+    5. Customer Interactions
+    6. Booking Management
+
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000
+    description: Development server
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+tags:
+  - name: Authentication
+    description: User authentication and registration endpoints
+  - name: Restaurants
+    description: Restaurant management endpoints
+  - name: Menu
+    description: Menu management endpoints
+  - name: Tables
+    description: Table management endpoints
+  - name: Orders
+    description: Order management endpoints
+  - name: Customer
+    description: Public endpoints for customer interaction
+  - name: Bookings
+    description: Booking management endpoints
+
+paths:
+  # Authentication
+  /auth/register/owner:
+    $ref: './paths/auth/register-owner.yaml'
+  /auth/register/staff:
+    $ref: './paths/auth/register-staff.yaml'
+  /auth/register/kitchen:
+    $ref: './paths/auth/register-kitchen.yaml'
+  /auth/register/customer:
+    $ref: './paths/auth/register-customer.yaml'
+  /auth/register/admin:
+    $ref: './paths/auth/register-admin.yaml'
+  
+  /auth/login/owner:
+    $ref: './paths/auth/login-owner.yaml'
+  /auth/login/staff:
+    $ref: './paths/auth/login-staff.yaml'
+  /auth/login/kitchen:
+    $ref: './paths/auth/login-kitchen.yaml'
+  /auth/login/customer:
+    $ref: './paths/auth/login-customer.yaml'
+  /auth/login/admin:
+    $ref: './paths/auth/login-admin.yaml'
+  
+  /auth/profile:
+    $ref: './paths/auth/profile.yaml'
+  
+  # Restaurants
+  /restaurants:
+    $ref: './paths/restaurants/list.yaml'
+  /restaurants/{restaurantId}:
+    $ref: './paths/restaurants/single.yaml'
+  
+  # Menu
+  /menu/{restaurantId}/items:
+    $ref: './paths/menu/items.yaml'
+  /menu/{restaurantId}/items/{itemId}:
+    $ref: './paths/menu/single-item.yaml'
+  
+  # Tables
+  /tables/{restaurantId}:
+    $ref: './paths/tables/create.yaml'
+  /tables/{restaurantId}/tables:
+    $ref: './paths/tables/list.yaml'
+  /tables/{restaurantId}/tables/{tableId}:
+    $ref: './paths/tables/single.yaml'
+  
+  # Orders
+  /orders/{restaurantId}:
+    $ref: './paths/orders/create.yaml'
+  /orders/{restaurantId}/orders:
+    $ref: './paths/orders/list.yaml'
+  /orders/{restaurantId}/orders/{orderId}:
+    $ref: './paths/orders/single.yaml'
+  
+  # Customer
+  /tables/{restaurantId}/tables/{tableId}/menu:
+    $ref: './paths/customer/menu.yaml'
+  /orders/{restaurantId}/customer:
+    $ref: './paths/customer/order.yaml'
+  /orders/{restaurantId}/orders/{orderId}/status:
+    $ref: './paths/customer/status.yaml'
+  
+  # Bookings
+  /bookings:
+    $ref: './paths/bookings/create.yaml'
+  /bookings/{restaurantId}:
+    $ref: './paths/bookings/list.yaml'
+  /bookings/{bookingId}/status:
+    $ref: './paths/bookings/status.yaml'

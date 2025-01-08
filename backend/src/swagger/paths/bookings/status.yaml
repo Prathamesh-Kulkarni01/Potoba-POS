@@ -1,0 +1,31 @@
+patch:
+  tags:
+    - Bookings
+  summary: Update booking status
+  security:
+    - BearerAuth: []
+  parameters:
+    - in: path
+      name: bookingId
+      required: true
+      schema:
+        type: string
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+          properties:
+            status:
+              type: string
+              enum: [confirmed, cancelled, completed]
+  responses:
+    '200':
+      description: Booking status updated
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/booking.yaml'
