@@ -1,0 +1,17 @@
+type: object
+properties:
+  error:
+    type: string
+    description: Error message
+    example: "Invalid credentials"
+  code:
+    type: string
+    description: Error code
+    example: "UNAUTHORIZED"
+  timestamp:
+    type: string
+    format: date-time
+  path:
+    type: string
+    description: Request path
+    example: "/auth/login"

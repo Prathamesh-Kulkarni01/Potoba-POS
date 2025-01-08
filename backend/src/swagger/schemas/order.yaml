@@ -1,0 +1,35 @@
+type: object
+required:
+  - table
+  - items
+properties:
+  id:
+    type: string
+    format: uuid
+  table:
+    type: string
+    description: Table ID
+  items:
+    type: array
+    items:
+      type: object
+      required:
+        - menuItem
+        - quantity
+      properties:
+        menuItem:
+          type: string
+          description: Menu item ID
+        quantity:
+          type: integer
+          minimum: 1
+        price:
+          type: number
+  status:
+    type: string
+    enum: [pending, preparing, served]
+    default: pending
+  totalAmount:
+    type: number
+  specialInstructions:
+    type: string

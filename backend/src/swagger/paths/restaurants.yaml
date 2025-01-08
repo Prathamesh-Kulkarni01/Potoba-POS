@@ -1,0 +1,154 @@
+/restaurants:
+  post:
+    tags:
+      - Restaurants
+    summary: Create a new restaurant
+    description: Create a new restaurant with the provided details. Only restaurant owners can create restaurants.
+    security:
+      - BearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/restaurant.yaml#/Restaurant'
+          example:
+            name: "Sushi Master"
+            address: "456 Ocean Drive, Seafood City"
+            contactNumber: "+1-555-987-6543"
+            cuisine: "Japanese"
+            businessHours:
+              open: "11:00"
+              close: "23:00"
+    responses:
+      '201':
+        description: Restaurant created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/restaurant.yaml#/Restaurant'
+      '400':
+        description: Invalid input
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/error.yaml#/Error'
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/error.yaml#/Error'
+      '403':
+        description: Forbidden - User is not a restaurant owner
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/error.yaml#/Error'
+  
+  get:
+    tags:
+      - Restaurants
+    summary: Get all restaurants
+    description: Retrieve a list of all restaurants for the authenticated user
+    security:
+      - BearerAuth: []
+    parameters:
+      - in: query
+        name: cuisine
+        schema:
+          type: string
+        description: Filter restaurants by cuisine type
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum: [open, closed]
+        description: Filter restaurants by status
+      - in: query
+        name: rating
+        schema:
+          type: number
+          minimum: 0
+          maximum: 5
+        description: Filter restaurants by minimum rating
+    responses:
+      '200':
+        description: List of restaurants
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '../components/schemas/restaurant.yaml#/Restaurant'
+            example:
+              $ref: '../components/examples/restaurant.yaml#/examples/restaurantList/value'
+
+/restaurants/{restaurantId}:
+  get:
+    tags:
+      - Restaurants
+    summary: Get a specific restaurant
+    description: Retrieve detailed information about a specific restaurant
+    security:
+      - BearerAuth: []
+    parameters:
+      - in: path
+        name: restaurantId
+        required: true
+        schema:
+          type: string
+        description: ID of the restaurant
+    responses:
+      '200':
+        description: Restaurant details
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/restaurant.yaml#/Restaurant'
+      '404':
+        description: Restaurant not found
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/error.yaml#/Error'
+  
+  put:
+    tags:
+      - Restaurants
+    summary: Update a restaurant
+    description: Update details of an existing restaurant. Only restaurant owners can update their own restaurants.
+    security:
+      - BearerAuth: []
+    parameters:
+      - in: path
+        name: restaurantId
+        required: true
+        schema:
+          type: string
+        description: ID of the restaurant
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/restaurant.yaml#/Restaurant'
+    responses:
+      '200':
+        description: Restaurant updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/restaurant.yaml#/Restaurant'
+      '404':
+        description: Restaurant not found
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/error.yaml#/Error'
+      '403':
+        description: Forbidden - User is not the owner of this restaurant
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/error.yaml#/Error'

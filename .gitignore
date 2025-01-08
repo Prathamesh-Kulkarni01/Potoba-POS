@@ -1,4 +1,37 @@
-// ...existing code...
+# Ignore node_modules in all projects
+/backend/node_modules/
+/pos/node_modules/
+/webapp/node_modules/
+
+# Ignore environment variables in all projects
+/backend/.env
+/pos/.env
+/webapp/.env
+
+# Ignore lock files
+/backend/pnpm-lock.yaml
+/pos/pnpm-lock.yaml
+/webapp/pnpm-lock.yaml
+
+# Ignore build directories
+app/
+apps/
+
+# Ignore logs
+logs/
+*.log
+
+# Ignore temporary files
+tmp/
+temp/
+
+# Ignore IDE specific files
+.vscode/
+.idea/
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db// ...existing code...
 client/env
 client/node_modules
 client/pnpm-lock.yaml

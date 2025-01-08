@@ -1,0 +1,13 @@
+get:
+  tags:
+    - Authentication
+  summary: Get user profile
+  security:
+    - BearerAuth: []
+  responses:
+    '200':
+      description: User profile retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/user-profile.yaml'

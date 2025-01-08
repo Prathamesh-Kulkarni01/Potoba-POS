@@ -1,0 +1,51 @@
+get:
+  tags:
+    - Menu
+  summary: Get menu item details
+  security:
+    - BearerAuth: []
+  parameters:
+    - in: path
+      name: restaurantId
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: itemId
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Menu item details
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/menu-item.yaml'
+
+put:
+  tags:
+    - Menu
+  summary: Update menu item
+  security:
+    - BearerAuth: []
+  parameters:
+    - in: path
+      name: restaurantId
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: itemId
+      required: true
+      schema:
+        type: string
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../schemas/menu-item.yaml'
+  responses:
+    '200':
+      description: Menu item updated successfully

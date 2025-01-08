@@ -1,0 +1,30 @@
+get:
+  tags:
+    - Tables
+  summary: List tables
+  security:
+    - BearerAuth: []
+  parameters:
+    - in: path
+      name: restaurantId
+      required: true
+      schema:
+        type: string
+    - in: query
+      name: status
+      schema:
+        type: string
+        enum: [available, occupied, reserved]
+    - in: query
+      name: capacity
+      schema:
+        type: integer
+  responses:
+    '200':
+      description: List of tables
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../schemas/table.yaml'

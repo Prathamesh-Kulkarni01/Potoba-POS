@@ -1,0 +1,40 @@
+type: object
+required:
+  - table
+  - customerName
+  - customerEmail
+  - customerPhone
+  - bookingDate
+properties:
+  id:
+    type: string
+    format: uuid
+  table:
+    type: string
+    description: Table ID
+  restaurant:
+    type: string
+    description: Restaurant ID
+  customerName:
+    type: string
+    example: "John Doe"
+  customerEmail:
+    type: string
+    format: email
+    example: "john@example.com"
+  customerPhone:
+    type: string
+    example: "+1-555-123-4567"
+  bookingDate:
+    type: string
+    format: date-time
+  status:
+    type: string
+    enum: [confirmed, cancelled, completed]
+    default: confirmed
+  createdAt:
+    type: string
+    format: date-time
+  updatedAt:
+    type: string
+    format: date-time

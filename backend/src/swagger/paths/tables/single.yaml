@@ -1,0 +1,24 @@
+get:
+  tags:
+    - Tables
+  summary: Get table details
+  security:
+    - BearerAuth: []
+  parameters:
+    - in: path
+      name: restaurantId
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: tableId
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Table details
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/table.yaml'

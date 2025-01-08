@@ -1,0 +1,25 @@
+post:
+  tags:
+    - Orders
+  summary: Create order
+  security:
+    - BearerAuth: []
+  parameters:
+    - in: path
+      name: restaurantId
+      required: true
+      schema:
+        type: string
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../schemas/order.yaml'
+  responses:
+    '201':
+      description: Order created
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/order.yaml'

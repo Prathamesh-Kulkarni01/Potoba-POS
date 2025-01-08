@@ -1,0 +1,155 @@
+/tables/{restaurantId}/tables/{tableId}/menu:
+  get:
+    tags:
+      - Customer
+    summary: Get table menu via QR code
+    description: Public endpoint accessed when a customer scans the table's QR code
+    parameters:
+      - in: path
+        name: restaurantId
+        required: true
+        schema:
+          type: string
+        example: "507f1f77bcf86cd799439011"
+      - in: path
+        name: tableId
+        required: true
+        schema:
+          type: string
+        example: "507f1f77bcf86cd799439013"
+    responses:
+      '200':
+        description: Table and menu information
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                table:
+                  $ref: '#/components/schemas/Table'
+                menu:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/MenuItem'
+                qrCode:
+                  type: string
+                  example: "https://restaurant-app.com/restaurants/123/tables/456/order"
+
+/orders/{restaurantId}/customer:
+  post:
+    tags:
+      - Customer
+    summary: Place customer order
+    description: Public endpoint for customers to place orders from their table
+    parameters:
+      - in: path
+        name: restaurantId
+        required: true
+        schema:
+          type: string
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - tableId
+              - items
+            properties:
+              tableId:
+                type: string
+                example: "507f1f77bcf86cd799439013"
+              items:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - menuItemId
+                    - quantity
+                  properties:
+                    menuItemId:
+                      type: string
+                      example: "507f1f77bcf86cd799439012"
+                    quantity:
+                      type: integer
+                      minimum: 1
+                      example: 2
+              specialInstructions:
+                type: string
+                example: "No onions please"
+    responses:
+      '201':
+        description: Order placed successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerOrder'
+
+/orders/{restaurantId}/customer/{orderId}/status:
+  get:
+    tags:
+      - Customer
+    summary: Get customer order status
+    description: Public endpoint for customers to check their order status
+    parameters:
+      - in: path
+        name: restaurantId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: orderId
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Order status information
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [pending, preparing, served]
+                estimatedTime:
+                  type: integer
+                  description: Estimated waiting time in minutes
+                  example: 15
+
+components:
+  schemas:
+    CustomerOrder:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum: [pending, preparing, served]
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              menuItem:
+                $ref: '#/components/schemas/MenuItem'
+              quantity:
+                type: integer
+              price:
+                type: number
+        totalAmount:
+          type: number
+        specialInstructions:
+          type: string
+        orderNumber:
+          type: string
+          example: "A123"
+        estimatedTime:
+          type: integer
+          description: Estimated waiting time in minutes
+        createdAt:
+          type: string
+          format: date-time

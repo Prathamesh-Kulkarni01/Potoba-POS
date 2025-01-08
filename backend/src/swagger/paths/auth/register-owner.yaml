@@ -1,0 +1,38 @@
+post:
+  tags:
+    - Authentication
+  summary: Register restaurant owner
+  description: Create a new restaurant owner account
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - name
+            - email
+            - password
+          properties:
+            name:
+              type: string
+              example: "John Doe"
+            email:
+              type: string
+              format: email
+              example: "owner@restaurant.com"
+            password:
+              type: string
+              format: password
+              example: "password123"
+  responses:
+    '201':
+      description: Owner registered successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "User registered successfully"

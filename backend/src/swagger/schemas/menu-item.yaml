@@ -1,0 +1,30 @@
+type: object
+required:
+  - name
+  - description
+  - price
+  - category
+properties:
+  id:
+    type: string
+    format: uuid
+  name:
+    type: string
+    example: "Margherita Pizza"
+  description:
+    type: string
+    example: "Classic Italian pizza with tomatoes and mozzarella"
+  price:
+    type: number
+    example: 12.99
+  category:
+    type: string
+    example: "Pizza"
+  isVegetarian:
+    type: boolean
+    example: true
+  spicyLevel:
+    type: integer
+    minimum: 0
+    maximum: 3
+    example: 1

@@ -1,0 +1,306 @@
+openapi: 3.0.0
+info:
+  title: Restaurant Management API
+  description: API documentation for Restaurant Management System
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Development server
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  
+  schemas:
+    User:
+      type: object
+      properties:
+        email:
+          type: string
+          example: owner@restaurant.com
+        password:
+          type: string
+          example: password123
+        name:
+          type: string
+          example: John Doe
+        role:
+          type: string
+          enum: [owner, staff, kitchen]
+          example: owner
+
+    Restaurant:
+      type: object
+      properties:
+        name:
+          type: string
+          example: The Grand Restaurant
+        address:
+          type: string
+          example: 123 Main St, City
+        status:
+          type: string
+          enum: [open, closed]
+          example: open
+
+    MenuItem:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Margherita Pizza
+        description:
+          type: string
+          example: Classic Italian pizza with tomatoes and mozzarella
+        price:
+          type: number
+          example: 12.99
+        category:
+          type: string
+          example: Pizza
+
+    Table:
+      type: object
+      properties:
+        tableNumber:
+          type: string
+          example: A1
+        capacity:
+          type: number
+          example: 4
+        status:
+          type: string
+          enum: [available, occupied, reserved]
+          example: available
+
+    Order:
+      type: object
+      properties:
+        tableId:
+          type: string
+          example: 507f1f77bcf86cd799439011
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              menuItemId:
+                type: string
+                example: 507f1f77bcf86cd799439012
+              quantity:
+                type: number
+                example: 2
+        status:
+          type: string
+          enum: [pending, preparing, served]
+          example: pending
+        totalPrice:
+          type: number
+          example: 25.98
+
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: User created successfully
+        '400':
+          description: Invalid input
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+
+  /restaurants:
+    get:
+      tags:
+        - Restaurants
+      summary: Get all restaurants
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of restaurants
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Restaurant'
+    
+    post:
+      tags:
+        - Restaurants
+      summary: Create a new restaurant
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Restaurant'
+      responses:
+        '201':
+          description: Restaurant created successfully
+
+  /menu-items:
+    get:
+      tags:
+        - Menu
+      summary: Get all menu items
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of menu items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MenuItem'
+    
+    post:
+      tags:
+        - Menu
+      summary: Create a new menu item
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuItem'
+      responses:
+        '201':
+          description: Menu item created successfully
+
+  /tables:
+    get:
+      tags:
+        - Tables
+      summary: Get all tables
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of tables
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Table'
+    
+    post:
+      tags:
+        - Tables
+      summary: Create a new table
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Table'
+      responses:
+        '201':
+          description: Table created successfully
+
+  /orders:
+    get:
+      tags:
+        - Orders
+      summary: Get all orders
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+    
+    post:
+      tags:
+        - Orders
+      summary: Create a new order
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '201':
+          description: Order created successfully
+
+  /orders/{orderId}:
+    put:
+      tags:
+        - Orders
+      summary: Update order status
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [pending, preparing, served]
+      responses:
+        '200':
+          description: Order status updated successfully

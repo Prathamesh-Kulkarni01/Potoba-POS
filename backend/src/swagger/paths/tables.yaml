@@ -1,0 +1,172 @@
+/tables/{restaurantId}:
+  post:
+    tags:
+      - Tables
+    summary: Create a new table
+    security:
+      - BearerAuth: []
+    parameters:
+      - in: path
+        name: restaurantId
+        required: true
+        schema:
+          type: string
+        example: "507f1f77bcf86cd799439011"
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - tableNumber
+              - capacity
+            properties:
+              tableNumber:
+                type: string
+                example: "A1"
+              capacity:
+                type: integer
+                minimum: 1
+                example: 4
+              status:
+                type: string
+                enum: [available, occupied, reserved]
+                default: available
+    responses:
+      '201':
+        description: Table created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Table'
+
+/tables/{restaurantId}/tables:
+  get:
+    tags:
+      - Tables
+    summary: Get all tables
+    security:
+      - BearerAuth: []
+    parameters:
+      - in: path
+        name: restaurantId
+        required: true
+        schema:
+          type: string
+        example: "507f1f77bcf86cd799439011"
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum: [available, occupied, reserved]
+      - in: query
+        name: capacity
+        schema:
+          type: integer
+          minimum: 1
+    responses:
+      '200':
+        description: List of tables
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Table'
+
+/tables/{restaurantId}/tables/{tableId}:
+  get:
+    tags:
+      - Tables
+    summary: Get table by ID
+    security:
+      - BearerAuth: []
+    parameters:
+      - in: path
+        name: restaurantId
+        required: true
+        schema:
+          type: string
+        example: "507f1f77bcf86cd799439011"
+      - in: path
+        name: tableId
+        required: true
+        schema:
+          type: string
+        example: "507f1f77bcf86cd799439013"
+    responses:
+      '200':
+        description: Table details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Table'
+
+/tables/{restaurantId}/tables/{tableId}/status:
+  patch:
+    tags:
+      - Tables
+    summary: Update table status
+    security:
+      - BearerAuth: []
+    parameters:
+      - in: path
+        name: restaurantId
+        required: true
+        schema:
+          type: string
+        example: "507f1f77bcf86cd799439011"
+      - in: path
+        name: tableId
+        required: true
+        schema:
+          type: string
+        example: "507f1f77bcf86cd799439013"
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - status
+            properties:
+              status:
+                type: string
+                enum: [available, occupied, reserved]
+    responses:
+      '200':
+        description: Table status updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Table'
+
+components:
+  schemas:
+    Table:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "507f1f77bcf86cd799439013"
+        tableNumber:
+          type: string
+          example: "A1"
+        capacity:
+          type: integer
+          example: 4
+        status:
+          type: string
+          enum: [available, occupied, reserved]
+          example: "available"
+        restaurant:
+          type: string
+          example: "507f1f77bcf86cd799439011"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time

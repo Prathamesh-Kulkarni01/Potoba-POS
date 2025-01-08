@@ -1,0 +1,41 @@
+get:
+  tags:
+    - Restaurants
+  summary: Get restaurant details
+  security:
+    - BearerAuth: []
+  parameters:
+    - in: path
+      name: restaurantId
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Restaurant details
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/restaurant.yaml'
+
+put:
+  tags:
+    - Restaurants
+  summary: Update restaurant
+  security:
+    - BearerAuth: []
+  parameters:
+    - in: path
+      name: restaurantId
+      required: true
+      schema:
+        type: string
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../schemas/restaurant.yaml'
+  responses:
+    '200':
+      description: Restaurant updated successfully

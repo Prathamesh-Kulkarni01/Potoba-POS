@@ -1,0 +1,15 @@
+Error:
+  type: object
+  properties:
+    error:
+      type: string
+      example: "Restaurant not found"
+    code:
+      type: string
+      example: "RESTAURANT_NOT_FOUND"
+    timestamp:
+      type: string
+      format: date-time
+    path:
+      type: string
+      example: "/restaurants/123"

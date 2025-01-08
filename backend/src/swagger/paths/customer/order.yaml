@@ -1,0 +1,23 @@
+post:
+  tags:
+    - Customer
+  summary: Place customer order
+  parameters:
+    - in: path
+      name: restaurantId
+      required: true
+      schema:
+        type: string
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../schemas/customer-order.yaml'
+  responses:
+    '201':
+      description: Order placed successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/order.yaml'
