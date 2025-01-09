@@ -21,8 +21,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [session]);
 
-  const updateUser = (user: any) => {
-    setUser(user);
+  const updateUser = (info: any) => {
+    setUser(()=>(user?{...user,...info}:{...info}));
   };
 
   const updateToken = (token: string) => {

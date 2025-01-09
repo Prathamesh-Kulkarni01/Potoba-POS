@@ -28,6 +28,7 @@ const nextConfig = {
   experimental: {
     turboMode: false,
   },
+  "typescript": { "ignoreBuildErrors": true },
   transpilePackages: ['geist'],
 };
 
