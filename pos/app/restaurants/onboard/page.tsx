@@ -35,6 +35,7 @@ import { Label } from '@/components/ui/label';
 import { SelectTrigger, SelectValue } from '@/components/ui/select';
 import Image from 'next/image';
 import { useUser } from '@/hooks/useUser';
+import { Restaurant } from '@/types/backendEntity';
 
 const RestaurantDashboard = () => {
   const router = useRouter();
@@ -50,8 +51,7 @@ const RestaurantDashboard = () => {
   const [businessHoursOpen, setBusinessHoursOpen] = useState('');
   const [businessHoursClose, setBusinessHoursClose] = useState('');
 
-  // UI states
-  const [restaurants, setRestaurants] = useState([]);
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -129,9 +129,6 @@ const RestaurantDashboard = () => {
         const res = await updateProfile(userId, {selectedRestaurant});
 
         if (res) {
-          // Refresh restaurants list to update UI
-          const updatedRestaurants = await listRestaurants();
-          setRestaurants(updatedRestaurants);
           updateUser({ selectedRestaurant });
           router.push('/dashboard');
         } else {
