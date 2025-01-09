@@ -14,6 +14,7 @@ const {
 } = require('../controllers/authController');
 const auth = require('../middleware/auth');
 const roleAuth = require('../middleware/roleAuth');
+const { updateProfile } = require('../controllers/userController');
 const router = express.Router();
 
 // Registration routes
@@ -32,5 +33,6 @@ router.post('/login/admin', loginAdmin);
 
 // Profile route
 router.get('/profile', auth, getProfile);
+router.patch('/update/:id', auth, updateProfile);
 
 module.exports = router;

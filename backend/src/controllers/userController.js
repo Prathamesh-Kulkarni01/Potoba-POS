@@ -34,8 +34,18 @@ const getProfile = async (req, res) => {
   }
 };
 
+const updateProfile=async (req,res)=>{
+  try {
+    const user = await userService.updateUserProfile(req.user.id,req.body);
+    res.json(user);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
+}
+
 module.exports = {
   register,
   login,
-  getProfile
+  getProfile,
+  updateProfile
 };
