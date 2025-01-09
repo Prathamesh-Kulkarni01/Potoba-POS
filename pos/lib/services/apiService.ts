@@ -14,7 +14,6 @@ async function fetchAPI(endpoint: string, options: RequestInit) {
     ...(token && { 'Authorization': `Bearer ${token}` }),
     ...(role && { 'Role': role }),
   };
-console.log({options})
   const response = await fetch(`${BASE_URL}${endpoint}`, { ...options, headers });
   if (!response.ok) {
     const errorData = await response.json();

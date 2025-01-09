@@ -34,11 +34,13 @@ import {
 import { Label } from '@/components/ui/label';
 import { SelectTrigger, SelectValue } from '@/components/ui/select';
 import Image from 'next/image';
+import { useUser } from '@/hooks/useUser';
 
 const RestaurantDashboard = () => {
-  // const router = useRouter();
+  const router = useRouter();
   const { data: session } = useSession();
   const userId = session?.user?.id;
+  const { updateUser } = useUser();
 
   // Form states
   const [name, setName] = useState('');
@@ -121,17 +123,17 @@ const RestaurantDashboard = () => {
   };
 
   // Handle restaurant selection
-  const handleSelectRestaurant = async (restaurantId: string) => {
+  const handleSelectRestaurant = async (selectedRestaurant: string) => {
     if (userId) {
       try {
-        const res = await updateProfile(userId, {
-          selectedRestaurant: restaurantId
-        });
+        const res = await updateProfile(userId, {selectedRestaurant});
 
-        if (res.ok) {
+        if (res) {
           // Refresh restaurants list to update UI
           const updatedRestaurants = await listRestaurants();
           setRestaurants(updatedRestaurants);
+          updateUser({ selectedRestaurant });
+          router.push('/dashboard');
         } else {
           throw new Error('Failed to select restaurant');
         }
@@ -260,9 +262,9 @@ const RestaurantDashboard = () => {
           {/* Existing Restaurant Cards */}
           {restaurants.map((restaurant) => (
             <Card
-              key={restaurant.id!}
+              key={restaurant._id!}
               className="group h-[300px] w-[340px] overflow-hidden bg-white transition-all duration-300 hover:shadow-xl"
-              onClick={() => handleSelectRestaurant(restaurant.id)}
+              onClick={() => handleSelectRestaurant(restaurant._id)}
             >
               <CardHeader className="relative p-0 ">
                 <Image

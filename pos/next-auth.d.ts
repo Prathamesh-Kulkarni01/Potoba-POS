@@ -7,6 +7,7 @@ declare module 'next-auth' {
       id: string;
       email: string;
       onboarded: boolean; // Add custom property
+      selectedRestaurant?:string,
     } & DefaultSession['user'];
   }
 }
