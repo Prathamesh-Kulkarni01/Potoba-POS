@@ -99,13 +99,13 @@ export default function UserAuthForm() {
         if (res && res.ok && res.token) {
           updateToken(res.token); // Update token context
         }
-        router.push('/restaurants/onboard');
+        router.push('/dashboard');
       }
     });
   };
 
   if (status === "authenticated") {
-    router.push('/restaurants/onboard');
+    router.push('/dashboard');
     return null;
   }
 
