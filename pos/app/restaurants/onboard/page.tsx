@@ -142,13 +142,13 @@ const RestaurantDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white overflow-auto">
       {/* Hero Section */}
       <div className="bg-orange-500 py-8 text-white">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl">
             <h1 className="mb-4 text-5xl font-bold">Welcome to Potoba</h1>
-            <p className="mb-8 text-xl text-orange-100">
+            <p className="hidden md:flex mb-8 text-xl text-orange-100">
               Manage all your restaurants in one place. Streamline operations,
               boost revenue, and deliver exceptional dining experiences.
             </p>
@@ -164,10 +164,10 @@ const RestaurantDashboard = () => {
         </div>
       </div>
 
-      <div className="container mx-auto overflow-auto px-4 py-8">
+      <div className="container max-h-lvh mx-auto overflow-auto px-4 py-8">
         {/* Stats Overview */}
         {/* Stats Cards with Animation */}
-        <div className="mb-12 grid grid-cols-1 gap-6 md:grid-cols-4">
+        <div className="mb-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           <Card className="bg-white/80 backdrop-blur transition-all hover:shadow-lg">
             <CardContent className="pt-6">
               <div className="flex items-center space-x-4">
@@ -237,7 +237,7 @@ const RestaurantDashboard = () => {
           </p>
         </div>
 
-        <div className="flex  gap-6 overflow-auto">
+        <div className="flex flex-wrap gap-6 overflow-auto">
           {/* Add New Restaurant Card */}
           <Card
             className="group w-[340px] cursor-pointer border-2 border-dashed border-zinc-300 bg-white/50 transition-all duration-300 hover:border-orange-300 hover:shadow-xl"
@@ -260,7 +260,7 @@ const RestaurantDashboard = () => {
           {restaurants.map((restaurant) => (
             <Card
               key={restaurant._id!}
-              className="group h-[300px] w-[340px] overflow-hidden bg-white transition-all duration-300 hover:shadow-xl"
+              className="group h-[300px] w-full sm:w-[340px] overflow-hidden bg-white transition-all duration-300 hover:shadow-xl"
               onClick={() => handleSelectRestaurant(restaurant._id)}
             >
               <CardHeader className="relative p-0 ">

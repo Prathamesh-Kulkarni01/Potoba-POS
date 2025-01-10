@@ -99,9 +99,9 @@ const BillingDetails = ({ table, onUpdateTable }: any) => {
   };
 
   return (
-    <div className="rounded-lg -mt-14 mb-5 bg-secondary  p-6 shadow-lg">
+    <div className="rounded-lg -mt-14 mb-5 bg-secondary p-6 shadow-lg md:mt-0 md:mb-0 md:p-4">
       {/* Customer Details */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row items-center justify-between">
         <div className="flex items-center space-x-4">
           <QRCode value={`https://restaurant.com/table/${table.name}`} size={100} />
           <div>
@@ -111,16 +111,15 @@ const BillingDetails = ({ table, onUpdateTable }: any) => {
             <p className=""><strong>Review:</strong> {customer.review}</p>
           </div>
         </div>
-        <p className="text-gray-600">Capacity: {table.capacity}</p>
+        <p className="text-gray-600 mt-4 md:mt-0">Capacity: {table.capacity}</p>
       </div>
 
-
-      <div className="mt-2">
+      <div className="mt-2 overflow-x-auto">
         <table className="w-full text-left">
-          <thead className=" flex w-full">
+          <thead className="flex w-full">
             <tr className="mb-4 flex w-full">
               <th className="border-b w-1/4 px-4 py-2 text-left text-sm ">
-                Item
+                Item 
               </th>
               <th className="border-b w-1/4 px-4 py-2 text-left text-sm ">
                 Price
@@ -222,7 +221,7 @@ const BillingDetails = ({ table, onUpdateTable }: any) => {
         </div>
       </div>
 
-      <div className="mt-6 flex justify-between space-x-4">
+      <div className="mt-6 flex flex-col md:flex-row justify-between space-y-4 md:space-y-0 md:space-x-4">
         <button
           onClick={() => setAddMenuOpen(true)}
           className="flex items-center rounded-lg bg-blue-600 px-6 py-2 text-white shadow-md hover:bg-blue-700"
