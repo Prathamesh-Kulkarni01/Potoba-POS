@@ -1,20 +1,12 @@
 "use server";
-// import { auth } from '@/auth';
+import { auth } from '@/auth';
 // import { updateSessionUser } from './sessionService';
 
 const BASE_URL = process.env.BACKEND_API_URL ;
 
 async function fetchAPI(endpoint: string, options: RequestInit) {
-  // const session = await auth();
-  interface Session {
-    user?: {
-      token?: string;
-      role?: string;
-    };
-  }
-
-  const session: Session = {};
-  const token = session?.user?.token;
+  const session = await auth();
+  const token = (session?.user as any)?.token;
   const role = (session?.user as any)?.role;
   const headers = {
     'Content-Type': 'application/json',
