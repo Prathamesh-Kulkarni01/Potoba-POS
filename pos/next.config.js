@@ -16,6 +16,11 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'w7.pngwing.com',
         port: ''
+      },
+      {
+        protocol: 'https',
+        hostname: 'plus.unsplash.com',
+        port: ''
       }
     ]
    
