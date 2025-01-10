@@ -2,7 +2,7 @@
 import { auth } from '@/auth';
 // import { updateSessionUser } from './sessionService';
 
-const BASE_URL = process.env.BACKEND_API_URL || 'http://localhost:3000';
+const BASE_URL = process.env.BACKEND_API_URL ;
 
 async function fetchAPI(endpoint: string, options: RequestInit) {
   const session = await auth();

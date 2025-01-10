@@ -61,6 +61,7 @@ const RestaurantDashboard = () => {
       if (userId) {
         try {
           const data = await listRestaurants();
+          console.log({data});
           if (data.length > 3) {
             data.length = 3;
           }
