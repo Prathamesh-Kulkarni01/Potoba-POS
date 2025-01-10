@@ -27,7 +27,7 @@ const authConfig: NextAuthConfig = {
           type: 'text',
         },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials: Partial<Record<'role' | 'email' | 'password', unknown>> | undefined, req: any) {
         console.log(credentials);
         if (!credentials) {
           throw new Error('No credentials provided');
@@ -57,7 +57,7 @@ const authConfig: NextAuthConfig = {
           default:
             throw new Error('Invalid role');
         }
-                if (response) {
+        if (response) {
           const { token, user } = await response;
           user.token = token; // Attach token to user object
           return user;
@@ -73,7 +73,7 @@ const authConfig: NextAuthConfig = {
     strategy: "jwt", // Use JWT strategy instead of sessions
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: any, user: any }) {
       if (user) {
         token.id = user.id;
         token.email = user.email;
