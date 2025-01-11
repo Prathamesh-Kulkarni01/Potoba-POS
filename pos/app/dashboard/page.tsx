@@ -1,20 +1,20 @@
 "use client"
-import { auth } from '@/auth';  // Ensure your auth utility is correctly imported
-import { useUser } from '@/hooks/useUser';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
+export default function Dashboard() {
+  const router = useRouter();
+  const { data: session } = useSession();
 
-export default  function Dashboard() {
-  // const session = await auth();
+  if (session === undefined) return null;
 
-  // Type-checking to access `user` safely
-  const { user } = useUser();
-
-  if (!user) {
-    return redirect('/');
-  } else if (!user.selectedRestaurant) {
-    return redirect('/restaurants/onboard');
+  if (!session || !session.user) {
+    router.push('/');
+  } else if (!session.user.selectedRestaurant) {
+    router.push('/restaurants/onboard');
   } else {
-    return redirect('/dashboard/overview');
+    router.push('/dashboard/overview');
   }
+
+  return null;
 }
