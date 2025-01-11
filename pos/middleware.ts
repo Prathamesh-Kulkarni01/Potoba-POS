@@ -1,3 +1,6 @@
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+
 // Protecting routes with next-auth
 // https://next-auth.js.org/configuration/nextjs#middleware
 // https://nextjs.org/docs/app/building-your-application/routing/middleware
@@ -12,4 +15,11 @@
 //   }
 // });
 
-// export const config = { matcher: ['/dash/:path*'] };
+export default function middleware(req: NextRequest) {
+  console.log('Request received:', req.url);
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: '/api/:path*',
+};
