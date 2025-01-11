@@ -31,15 +31,9 @@ const allowedOrigins = ["https://potoba-pos.vercel.app", "http://localhost:3000"
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true); // Allow request
-      } else {
-        callback(new Error("Not allowed by CORS")); // Reject request
-      }
-    },
+    origin: ["https://potoba-pos.vercel.app"], // Replace with your Vercel domain
     methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true, // Allow cookies and credentials
+    credentials: true,
   })
 );
 
