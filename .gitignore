@@ -12,6 +12,7 @@
 /backend/pnpm-lock.yaml
 /pos/pnpm-lock.yaml
 /webapp/pnpm-lock.yaml
+pnpm-lock.yaml
 
 # Ignore build directories
 app/
