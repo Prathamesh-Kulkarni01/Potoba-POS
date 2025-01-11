@@ -26,7 +26,23 @@ const port = process.env.PORT || 3000;
 })();
 
 // Middleware
-app.use(cors());
+
+const allowedOrigins = ["https://potoba-pos.vercel.app", "http://localhost:3000","http://localhost:3001"]; // Add specific domains if needed
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true); // Allow request
+      } else {
+        callback(new Error("Not allowed by CORS")); // Reject request
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true, // Allow cookies and credentials
+  })
+);
+
 app.use(express.json());
 
 // Database connection check middleware
