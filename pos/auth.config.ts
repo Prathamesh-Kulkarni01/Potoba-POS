@@ -10,6 +10,7 @@ interface User extends NextAuthUser {
 }
 
 const authConfig: NextAuthConfig = {
+  debug: true,
   providers: [
     GithubProvider({
       clientId: process.env.GITHUB_ID ?? '',
@@ -90,6 +91,16 @@ const authConfig: NextAuthConfig = {
       session.user.selectedRestaurant = token.selectedRestaurant || null;
       session.user.token = token.token; // Add token to session
       return session;
+    },
+  },
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        secure: true, // Ensure cookies are secure in production
+        sameSite: "lax", // Or "strict", depending on your needs
+      },
     },
   },
   // events: {
