@@ -1,39 +1,35 @@
-"use server";
-import { auth } from '@/auth';
-// import { updateSessionUser } from './sessionService';
+"use server"
+import { getToken } from 'next-auth/jwt';
+import { headers } from 'next/headers';
 
-const BASE_URL = process.env.BACKEND_API_URL ;
+const BASE_URL = process.env.BACKEND_API_URL;
 
-async function fetchAPI(endpoint: string, options: RequestInit) {
-  const session = await auth();
-  const token = (session?.user as any)?.token;
-  const role = (session?.user as any)?.role;
-  const headers = {
+async function fetchAPI(endpoint: string, options: RequestInit = {}) {
+  // Retrieve the token from the session or cookies using getToken
+  const reqHeaders = headers();
+  const token = await getToken({ req: { headers: reqHeaders }, secret: process.env.AUTH_SECRET });
+
+  const authHeaders = {
     'Content-Type': 'application/json',
-    ...options.headers,
-    ...(token && { 'Authorization': `Bearer ${token}` }),
-    ...(role && { 'Role': role }),
+    ...(token && { 'Authorization': `Bearer ${token.token}` }),
   };
-  const response = await fetch(`${BASE_URL}${endpoint}`, { ...options, headers });
+
+  const response = await fetch(`${BASE_URL}${endpoint}`, {
+    ...options,
+    headers: { ...authHeaders, ...options.headers },
+  });
+
+
   if (!response.ok) {
-    const errorData = await response.json();
-    // throw new Error(errorData.message || 'API request failed');
+    // throw new Error(`API request failed: ${response.statusText}`);
   }
-  const data = await response.json();
 
-  // // Update session user if the user data is updated
-  // if (data.user) {
-  //   await updateSessionUser(data.user);
-  // }
-
-  return data;
+  return await response.json();
 }
 
 export async function post(endpoint: string, body: any) {
-  console.log({body})
   return fetchAPI(endpoint, {
     method: 'POST',
-    headers: {},
     body: JSON.stringify(body),
   });
 }
@@ -41,14 +37,12 @@ export async function post(endpoint: string, body: any) {
 export async function get(endpoint: string) {
   return fetchAPI(endpoint, {
     method: 'GET',
-    headers: {},
   });
 }
 
 export async function put(endpoint: string, body: any) {
   return fetchAPI(endpoint, {
-    method: 'PATCH',
-    headers: {},
+    method: 'PUT',
     body: JSON.stringify(body),
   });
 }
@@ -56,7 +50,5 @@ export async function put(endpoint: string, body: any) {
 export async function del(endpoint: string) {
   return fetchAPI(endpoint, {
     method: 'DELETE',
-    headers: {},
   });
 }
-
