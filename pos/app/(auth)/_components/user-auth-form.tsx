@@ -118,7 +118,7 @@ export default function UserAuthForm() {
         throw new Error('Registration failed');
       }
 
-      toast.success('Registered Successfully!');
+      toast.success(`Registered Successfully!${response.token}`);
       setIsRegistering(false); // Show login form after successful registration
       loginForm.reset(); // Reset login form to clear any previous data
     } catch (error) {
