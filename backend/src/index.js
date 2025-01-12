@@ -31,7 +31,7 @@ const allowedOrigins = ["https://potoba-pos.vercel.app", "http://localhost:3000"
 
 app.use(
   cors({
-    origin: ["https://potoba-pos.vercel.app"], // Replace with your Vercel domain
+    origin: [...allowedOrigins], // Replace with your Vercel domain
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })

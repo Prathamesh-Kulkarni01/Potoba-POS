@@ -258,7 +258,7 @@ const RestaurantDashboard = () => {
           </Card>
 
           {/* Existing Restaurant Cards */}
-          {restaurants.map((restaurant) => (
+          {restaurants?.map((restaurant) => (
             <Card
               key={restaurant._id!}
               className="group h-[300px] w-full sm:w-[340px] overflow-hidden bg-white transition-all duration-300 hover:shadow-xl"
