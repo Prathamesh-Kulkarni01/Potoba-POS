@@ -20,11 +20,11 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}) {
   });
 
 
-  if (!response.ok) {
-    // throw new Error(`API request failed: ${response.statusText}`);
+  if (!response) {
+    throw new Error(`API request failed: ${response}`);
   }
 
-  return await response.json();
+  return  response
 }
 
 export async function post(endpoint: string, body: any) {
