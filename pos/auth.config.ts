@@ -58,8 +58,9 @@ const authConfig: NextAuthConfig = {
           default:
             throw new Error('Invalid role');
         }
-        if (response) {
-          const { token, user } = await response;
+        const res = await response;
+        if (res?.token) {
+          const {user, token}= res;
           user.token = token; // Attach token to user object
           return user;
         }
@@ -91,16 +92,6 @@ const authConfig: NextAuthConfig = {
       session.user.selectedRestaurant = token.selectedRestaurant || null;
       session.user.token = token.token; // Add token to session
       return session;
-    },
-  },
-  cookies: {
-    sessionToken: {
-      name: `next-auth.session-token`,
-      options: {
-        httpOnly: true,
-        secure: true, // Ensure cookies are secure in production
-        sameSite: "lax", // Or "strict", depending on your needs
-      },
     },
   },
   // events: {

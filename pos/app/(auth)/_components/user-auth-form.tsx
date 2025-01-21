@@ -62,7 +62,7 @@ export default function UserAuthForm() {
   const [loading, startTransition] = useTransition();
   const [isRegistering, setIsRegistering] = useState(false); // State to toggle form view
   const router = useRouter();
-  const { status } = useSession();
+  const { data: session } = useSession();
   const { updateToken } = useUser(); // Use useUser hook
   
   const defaultLoginValues = { email: 'demo@gmail.com', role: '' };
@@ -91,8 +91,8 @@ export default function UserAuthForm() {
         ...data,
         callbackUrl: callbackUrl ?? '/dashboard'
       });
-     
-      if (res?.error) {
+     console.log({res})
+      if (!res||res?.error) {
         toast.error('Invalid credentials or error');
       } else {
         toast.success('Signed In Successfully!');
@@ -104,7 +104,7 @@ export default function UserAuthForm() {
     });
   };
 
-  if (status === "authenticated") {
+  if (session) {
     router.push('/dashboard');
     return null;
   }

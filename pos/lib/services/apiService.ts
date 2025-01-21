@@ -7,11 +7,11 @@ const BASE_URL = process.env.BACKEND_API_URL;
 async function fetchAPI(endpoint: string, options: RequestInit = {}) {
   // Retrieve the token from the session or cookies using getToken
   const reqHeaders = headers();
-  const token = await getToken({ req: { headers: reqHeaders }, secret: process.env.AUTH_SECRET });
+  const token = await getToken({ req: { headers: reqHeaders }, secret: process.env.AUTH_SECRET,cookieName: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token' });
 
   const authHeaders = {
     'Content-Type': 'application/json',
-    ...(token && { 'Authorization': `Bearer ${token.token}` }),
+    ...(token && { 'Authorization': `Bearer ${token?.token||""}` }),
   };
 
   const response = await fetch(`${BASE_URL}${endpoint}`, {
