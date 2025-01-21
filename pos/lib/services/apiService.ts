@@ -11,7 +11,7 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}) {
 
   const authHeaders = {
     'Content-Type': 'application/json',
-    ...(token && { 'Authorization': `Bearer ${token?.token||""}` }),
+    ...(token && { 'Authorization': `Bearer ${token.token}` }),
   };
 
   const response = await fetch(`${BASE_URL}${endpoint}`, {
@@ -20,11 +20,11 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}) {
   });
 
 
-  if (!response) {
-    throw new Error(`API request failed: ${response}`);
+  if (!response.ok) {
+    // throw new Error(`API request failed: ${response.statusText}`);
   }
 
-  return  response
+  return await response.json();
 }
 
 export async function post(endpoint: string, body: any) {
