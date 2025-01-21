@@ -89,7 +89,7 @@ const registerAdmin = async (req, res) => {
 
 // Login Controllers
 const loginUser = async (req, res) => {
-  console.log('loginUser'= req.body);
+  console.log('loginUser', req.body);
   try {
     const { email, password } = req.body;
     const result = await userService.loginUser(email, password, 'owner');
