@@ -2,8 +2,6 @@ import { NextAuthConfig, User as NextAuthUser } from 'next-auth';
 import CredentialProvider from 'next-auth/providers/credentials';
 import GithubProvider from 'next-auth/providers/github';
 
-
-
 interface User extends NextAuthUser {
   role: string;
   selectedRestaurant?: string;
@@ -30,7 +28,7 @@ const authConfig: NextAuthConfig = {
         },
       },
       async authorize(credentials: Partial<Record<'role' | 'email' | 'password', unknown>> | undefined, req: any) {
-
+        console.debug('Authorize called with credentials:', credentials);
         if (!credentials) {
           throw new Error('No credentials provided');
         }
@@ -60,9 +58,11 @@ const authConfig: NextAuthConfig = {
             throw new Error('Invalid role');
         }
         const res = await response;
+        console.debug('Login response:', res);
         if (res?.token) {
           const {user, token}= res;
           user.token = token; // Attach token to user object
+          console.log({user});
           return user;
         }
         return null;
@@ -77,6 +77,7 @@ const authConfig: NextAuthConfig = {
   },
   callbacks: {
     async jwt({ token, user }: { token: any, user: any }) {
+      console.debug('JWT callback called with token and user:', token, user);
       if (user) {
         token.id = user.id;
         token.email = user.email;
@@ -87,6 +88,7 @@ const authConfig: NextAuthConfig = {
       return token;
     },
     async session({ session, token }: { session: any, token: any }) {
+      console.debug('Session callback called with session and token:', session, token);
       session.user.id = token.id as string;
       session.user.email = token.email ?? '';
       session.user.role = token.role;
@@ -106,51 +108,44 @@ const authConfig: NextAuthConfig = {
 
 export default authConfig;
 
-
-
 const BASE_URL = process.env.BACKEND_API_URL;
 
+const fetchAPI = async (endpoint:string, options = {}) => {
+  console.debug('fetchAPI called with endpoint and options:', endpoint, options);
+  const authHeaders = {
+    "Content-Type": "application/json"
+  };
 
-  const fetchAPI =
-    async (endpoint:string, options = {}) => {
-    
-
-      const authHeaders = {
-        "Content-Type": "application/json"
-      };
-
-      try {
-        const response = await fetch(`${BASE_URL}${endpoint}`, {
-          ...options,
-          headers: { ...authHeaders},
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || `API error: ${response.statusText}`);
-        }
-
-        return await response.json();
-      } catch (err) {
-       
-        throw err; // Re-throw for component-level handling if needed
-      } finally {
-      }
-    }
-  
-
-  const post = (endpoint:string, body:any) => {
-    return fetchAPI(endpoint, {
-      method: "POST",
-      body: JSON.stringify(body),
+  try {
+    const response = await fetch(`${BASE_URL}${endpoint}`, {
+      ...options,
+      headers: { ...authHeaders},
     });
+    console.log({response})
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || `API error: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (err) {
+    console.error('fetchAPI error:', err);
+    throw err; // Re-throw for component-level handling if needed
+  } finally {
+    console.debug('fetchAPI finally block executed');
   }
+}
 
- 
+const post = (endpoint:string, body:any) => {
+  console.debug('post called with endpoint and body:', endpoint, body);
+  return fetchAPI(endpoint, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
 
-// 
-  const loginOwner = async (body:any) => post("/auth/login/owner", body);
-  const loginStaff = async (body:any) => post("/auth/login/staff", body);
-  const loginKitchen = async (body:any) => post("/auth/login/kitchen", body);
-  const loginCustomer = async (body:any) => post("/auth/login/customer", body);
-  const loginAdmin = async (body:any) => post("/auth/login/admin", body);
+const loginOwner = async (body:any) => post("/auth/login/owner", body);
+const loginStaff = async (body:any) => post("/auth/login/staff", body);
+const loginKitchen = async (body:any) => post("/auth/login/kitchen", body);
+const loginCustomer = async (body:any) => post("/auth/login/customer", body);
+const loginAdmin = async (body:any) => post("/auth/login/admin", body);

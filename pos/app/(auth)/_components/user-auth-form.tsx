@@ -91,9 +91,8 @@ export default function UserAuthForm() {
         ...data,
         callbackUrl: callbackUrl ?? '/dashboard'
       });
-     console.log({res})
       if (!res||res?.error) {
-        toast.error('Invalid credentials or error');
+        toast.error('Invalid credentials or error'+JSON.stringify(res));
       } else {
         toast.success('Signed In Successfully!');
         if (res && res.ok && res.token) {
