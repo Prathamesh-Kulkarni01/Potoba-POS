@@ -11,12 +11,17 @@ export const authOptions : NextAuthConfig = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        username: {
-          label: "Username",
-          type: "text",
-          placeholder: "Enter username",
+        credentials: {
+          email: {
+            type: 'email',
+          },
+          password: {
+            type: 'password',
+          },
+          // role: {
+          //   type: 'text',
+          // },
         },
-        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         // Validate credentials with your database here
@@ -26,11 +31,11 @@ export const authOptions : NextAuthConfig = {
           email: "admin@example.com",
           image: "https://avatars.githubusercontent.com/u/80968727?v=4",
           username: "admin",
-          password: "admin",
+          password: "admin1",
         };
 
         if (
-          credentials?.username == user.username &&
+          (credentials?.username == user.username||credentials?.email == user.email) &&
           credentials.password == user.password
         ) {
           return user;
