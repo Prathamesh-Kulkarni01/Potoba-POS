@@ -1,7 +1,8 @@
 import { NextAuthConfig, User as NextAuthUser } from 'next-auth';
 import CredentialProvider from 'next-auth/providers/credentials';
 import GithubProvider from 'next-auth/providers/github';
-import { loginOwner, loginStaff, loginKitchen, loginCustomer, loginAdmin } from './lib/api/auth';
+
+
 
 interface User extends NextAuthUser {
   role: string;
@@ -29,7 +30,7 @@ const authConfig: NextAuthConfig = {
         },
       },
       async authorize(credentials: Partial<Record<'role' | 'email' | 'password', unknown>> | undefined, req: any) {
-        console.log(credentials);
+
         if (!credentials) {
           throw new Error('No credentials provided');
         }
@@ -104,3 +105,52 @@ const authConfig: NextAuthConfig = {
 };
 
 export default authConfig;
+
+
+
+const BASE_URL = process.env.BACKEND_API_URL;
+
+
+  const fetchAPI =
+    async (endpoint:string, options = {}) => {
+    
+
+      const authHeaders = {
+        "Content-Type": "application/json"
+      };
+
+      try {
+        const response = await fetch(`${BASE_URL}${endpoint}`, {
+          ...options,
+          headers: { ...authHeaders},
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || `API error: ${response.statusText}`);
+        }
+
+        return await response.json();
+      } catch (err) {
+       
+        throw err; // Re-throw for component-level handling if needed
+      } finally {
+      }
+    }
+  
+
+  const post = (endpoint:string, body:any) => {
+    return fetchAPI(endpoint, {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
+  }
+
+ 
+
+// 
+  const loginOwner = async (body:any) => post("/auth/login/owner", body);
+  const loginStaff = async (body:any) => post("/auth/login/staff", body);
+  const loginKitchen = async (body:any) => post("/auth/login/kitchen", body);
+  const loginCustomer = async (body:any) => post("/auth/login/customer", body);
+  const loginAdmin = async (body:any) => post("/auth/login/admin", body);
