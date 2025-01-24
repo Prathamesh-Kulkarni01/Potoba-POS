@@ -3,23 +3,14 @@ import { get, post, put } from '../services/apiService';
 import { cookies } from 'next/headers';
 
 async function handleLogin(endpoint: string, body: any) {
-  console.log("Login started");
   const response = await post(endpoint, body);
-
   if (response.token) {
-    const cookieName = process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token';
-    cookies().set(cookieName, response.token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      path: '/',
-      sameSite: 'strict'
-    });
-    console.log("Cookie set successfully");
-  } else {
-    console.log("No token received");
+    cookies().set(
+      process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token',
+      response.token,
+      { httpOnly: true, secure: process.env.NODE_ENV === 'production', path: '/', sameSite: 'strict' }
+    );
   }
-
-  console.log({ response });
   return response;
 }
 
@@ -67,6 +58,6 @@ export async function getProfile() {
   return get('/auth/profile');
 }
 
-export async function updateProfile(userId: string, body: any) {
-  return put(`/auth/update/${userId}`, body);
+export async function updateProfile(userId:string,body: any) {
+  return put(`/auth/update/${userId}`,body);
 }

@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { removeUserAndToken } from '@/lib/services/sessionService'; // Import necessary functions
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import { removeUserAndToken } from '@/lib/services/sessionService';
 import { getProfile } from '@/lib/api/auth';
 
 interface UserContextType {
@@ -53,16 +53,24 @@ export const UserProvider = ({
     verifyUserAndToken();
   }, [token, user]);
 
-  const updateUser = (info: any) => {
-    setUser((user: any | null) => (user ? { ...user, ...info } : { ...info }));
-  };
+  const updateUser = useCallback((info: any) => {
+    setUser((prevUser: any | null) => (prevUser ? { ...prevUser, ...info } : { ...info }));
+  }, []);
 
-  const updateToken = (token: string) => {
-    setToken(token);
-  };
+  const updateToken = useCallback((newToken: string) => {
+    setToken(newToken);
+  }, []);
+
+  const contextValue = useMemo(() => ({
+    user,
+    token,
+    loading,
+    updateUser,
+    updateToken
+  }), [user, token, loading, updateUser, updateToken]);
 
   return (
-    <UserContext.Provider value={{ user, token, loading, updateUser, updateToken }}>
+    <UserContext.Provider value={contextValue}>
       {children}
     </UserContext.Provider>
   );
