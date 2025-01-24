@@ -5,7 +5,7 @@ import { useUser } from '@/hooks/useUser';
 export default function Dashboard() {
   const router = useRouter();
   const { token, user } = useUser();
-
+console.log({token})
   if (!token) {
     router.push('/');
   } else if (!user?.selectedRestaurant) {
