@@ -2,7 +2,6 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 import { listRestaurants, createRestaurant } from '@/lib/api/restaurants';
 import {
   Card,
