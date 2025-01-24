@@ -1,6 +1,5 @@
-"use server";
+"use client";
 import { get, post, put } from '../services/apiService';
-import { cookies } from 'next/headers';
 
 async function handleLogin(endpoint: string, body: any) {
   console.log("login started")
