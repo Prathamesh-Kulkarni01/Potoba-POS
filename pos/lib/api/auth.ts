@@ -1,4 +1,4 @@
-"use client";
+"use server";
 import { get, post, put } from '../services/apiService';
 import { cookies } from 'next/headers';
 
