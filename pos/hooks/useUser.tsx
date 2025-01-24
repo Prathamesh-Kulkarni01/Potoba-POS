@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import {  removeUserAndToken } from '@/lib/services/sessionService'; // Import necessary functions
+import { getProfile } from '@/lib/api/auth';
 
 interface UserContextType {
   user: any;
@@ -10,19 +11,42 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-export const UserProvider = ({ children }: { children: React.ReactNode }) => {
-  const { data: session } = useSession();
+export const UserProvider = ({ session, children }: { session: any, children: React.ReactNode }) => {
   const [user, setUser] = useState(session?.user || null);
-  const [token, setToken] = useState<string | null>(null);
+  const [token, setToken] = useState(session?.token || null);
 
   useEffect(() => {
     if (session?.user) {
       setUser(session.user);
     }
+    if (session?.token) {
+      setToken(session.token);
+    }
   }, [session]);
 
+  useEffect(() => {
+    const verifyUserAndToken = async () => {
+      if (token) {
+        console.log("here",{token})
+        const fetchedUser = await getProfile();
+        console.log({fetchedUser})
+        if (fetchedUser) {
+          setUser(fetchedUser);
+        } else {
+          removeUserAndToken();
+          setUser(null);
+          setToken(null);
+        }
+      } else {
+        setUser(null);
+      }
+    };
+
+    verifyUserAndToken();
+  }, [token]);
+
   const updateUser = (info: any) => {
-    setUser(()=>(user?{...user,...info}:{...info}));
+    setUser((user: any | null) => user ? { ...user, ...info } : { ...info });
   };
 
   const updateToken = (token: string) => {

@@ -39,8 +39,8 @@ import { Restaurant } from '@/types/backendEntity';
 
 const RestaurantDashboard = () => {
   const router = useRouter();
-  const { data: session } = useSession();
-  const userId = session?.user?.id;
+  const {user}=useUser()
+  const userId = user?.id;
   const { updateUser } = useUser();
 
   // Form states

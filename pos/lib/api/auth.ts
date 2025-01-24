@@ -1,4 +1,16 @@
+"use server";
 import { get, post, put } from '../services/apiService';
+import { cookies } from 'next/headers';
+
+async function handleLogin(endpoint: string, body: any) {
+  console.log("login started")
+  const response = await post(endpoint, body);
+  if (response.token) {
+    cookies().set(process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token', response.token);
+  }
+  console.log({response})
+  return response;
+}
 
 export async function registerOwner(body: any) {
   return post('/auth/register/owner', body);
@@ -21,23 +33,23 @@ export async function registerAdmin(body: any) {
 }
 
 export async function loginOwner(body: any) {
-  return post('/auth/login/owner', body);
+  return handleLogin('/auth/login/owner', body);
 }
 
 export async function loginStaff(body: any) {
-  return post('/auth/login/staff', body);
+  return handleLogin('/auth/login/staff', body);
 }
 
 export async function loginKitchen(body: any) {
-  return post('/auth/login/kitchen', body);
+  return handleLogin('/auth/login/kitchen', body);
 }
 
 export async function loginCustomer(body: any) {
-  return post('/auth/login/customer', body);
+  return handleLogin('/auth/login/customer', body);
 }
 
 export async function loginAdmin(body: any) {
-  return post('/auth/login/admin', body);
+  return handleLogin('/auth/login/admin', body);
 }
 
 export async function getProfile() {

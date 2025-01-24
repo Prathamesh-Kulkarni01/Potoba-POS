@@ -1,4 +1,4 @@
-import { auth } from '@/auth';
+import { cookies } from 'next/headers';
 import Providers from '@/components/layout/providers';
 import { Toaster } from '@/components/ui/sonner';
 import type { Metadata } from 'next';
@@ -22,7 +22,9 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
+  const sessionToken = cookies().get(process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token');
+  const session = sessionToken ? { token: sessionToken } : null;
+
   return (
     <html
       lang="en"

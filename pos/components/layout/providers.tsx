@@ -1,23 +1,19 @@
 'use client';
 import React from 'react';
 import ThemeProvider from './ThemeToggle/theme-provider';
-import { SessionProvider, SessionProviderProps } from 'next-auth/react';
-import { UserProvider } from '@/hooks/useUser'; // Import UserProvider
+import { UserProvider } from '@/hooks/useUser';
 
-export default function Providers({
-  session,
-  children
-}: {
-  session: SessionProviderProps['session'];
+interface ProvidersProps {
+  session: any;
   children: React.ReactNode;
-}) {
+}
+
+export default function Providers({ session, children }: ProvidersProps) {
   return (
-    <>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <SessionProvider session={session}>
-          <UserProvider>{children}</UserProvider> {/* Wrap children in UserProvider */}
-        </SessionProvider>
-      </ThemeProvider>
-    </>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <UserProvider session={session}>
+        {children}
+      </UserProvider>
+    </ThemeProvider>
   );
 }

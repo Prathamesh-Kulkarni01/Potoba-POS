@@ -1,16 +1,14 @@
-"use client"
+'use client';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useUser } from '@/hooks/useUser';
 
 export default function Dashboard() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { user } = useUser();
 
-  if (session === undefined) return null;
-
-  if (!session || !session.user) {
+  if (!user) {
     router.push('/');
-  } else if (!session.user.selectedRestaurant) {
+  } else if (!user.selectedRestaurant) {
     router.push('/restaurants/onboard');
   } else {
     router.push('/dashboard/overview');

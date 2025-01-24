@@ -1,24 +1,23 @@
-"use server"
-import { getToken } from 'next-auth/jwt';
-import { headers } from 'next/headers';
+'use server';
+
+import getServerToken from "../utils/getServerToken";
+
 
 const BASE_URL = process.env.BACKEND_API_URL;
 
 async function fetchAPI(endpoint: string, options: RequestInit = {}) {
-  // Retrieve the token from the session or cookies using getToken
-  const reqHeaders = headers();
-  const token = await getToken({ req: { headers: reqHeaders }, secret: process.env.AUTH_SECRET,cookieName: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token' });
+  // const cookieToken = cookies().get(process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token');
+  const token = getServerToken();
 
   const authHeaders = {
     'Content-Type': 'application/json',
-    ...(token && { 'Authorization': `Bearer ${token.token}` }),
+    ...(token && { Authorization: `Bearer ${token}` })
   };
 
   const response = await fetch(`${BASE_URL}${endpoint}`, {
     ...options,
-    headers: { ...authHeaders, ...options.headers },
+    headers: { ...authHeaders, ...options.headers }
   });
-
 
   if (!response.ok) {
     // throw new Error(`API request failed: ${response.statusText}`);
@@ -30,25 +29,25 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}) {
 export async function post(endpoint: string, body: any) {
   return fetchAPI(endpoint, {
     method: 'POST',
-    body: JSON.stringify(body),
+    body: JSON.stringify(body)
   });
 }
 
 export async function get(endpoint: string) {
   return fetchAPI(endpoint, {
-    method: 'GET',
+    method: 'GET'
   });
 }
 
 export async function put(endpoint: string, body: any) {
   return fetchAPI(endpoint, {
     method: 'PUT',
-    body: JSON.stringify(body),
+    body: JSON.stringify(body)
   });
 }
 
 export async function del(endpoint: string) {
   return fetchAPI(endpoint, {
-    method: 'DELETE',
+    method: 'DELETE'
   });
 }
