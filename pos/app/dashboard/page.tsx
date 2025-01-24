@@ -1,17 +1,26 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/hooks/useUser';
+import { useEffect } from 'react';
 
 export default function Dashboard() {
   const router = useRouter();
-  const { token, user } = useUser();
-console.log({token})
-  if (!token) {
-    router.push('/');
-  } else if (!user?.selectedRestaurant) {
-    router.push('/restaurants/onboard');
-  } else {
-    router.push('/dashboard/overview');
+  const { token, user, loading } = useUser();
+
+  useEffect(() => {
+    if (!loading) {
+      if (!token) {
+        router.push('/');
+      } else if (!user?.selectedRestaurant) {
+        router.push('/restaurants/onboard');
+      } else {
+        router.push('/dashboard/overview');
+      }
+    }
+  }, [loading, token, user, router]);
+
+  if (loading) {
+    return <div>Loading...</div>;
   }
 
   return null;

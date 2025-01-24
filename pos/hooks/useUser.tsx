@@ -5,6 +5,7 @@ import { getProfile } from '@/lib/api/auth';
 interface UserContextType {
   user: any;
   token: string | null;
+  loading: boolean;
   updateUser: (user: any) => void;
   updateToken: (token: string) => void;
 }
@@ -20,6 +21,7 @@ export const UserProvider = ({
 }) => {
   const [user, setUser] = useState(session?.user || null);
   const [token, setToken] = useState(session?.token || null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (session?.user) {
@@ -33,6 +35,7 @@ export const UserProvider = ({
   useEffect(() => {
     const verifyUserAndToken = async () => {
       if (token && !user) {
+        setLoading(true);
         const fetchedUser = await getProfile();
         if (fetchedUser) {
           setUser(fetchedUser);
@@ -41,6 +44,7 @@ export const UserProvider = ({
           setUser(null);
           setToken(null);
         }
+        setLoading(false);
       } else {
         setUser(null);
       }
@@ -58,7 +62,7 @@ export const UserProvider = ({
   };
 
   return (
-    <UserContext.Provider value={{ user, token, updateUser, updateToken }}>
+    <UserContext.Provider value={{ user, token, loading, updateUser, updateToken }}>
       {children}
     </UserContext.Provider>
   );
