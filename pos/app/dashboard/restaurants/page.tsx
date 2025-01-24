@@ -1,6 +1,5 @@
-/* eslint-disable no-console */
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { listRestaurants, createRestaurant } from '@/lib/api/restaurants';
 import {
@@ -14,7 +13,6 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem } from '@/components/ui/select';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { updateProfile } from '@/lib/api/auth';
-
 import {
   PlusCircle,
   Store,
@@ -23,7 +21,6 @@ import {
   Settings,
   IndianRupeeIcon
 } from 'lucide-react';
-
 import {
   DialogDescription,
   DialogHeader,
@@ -35,14 +32,14 @@ import { SelectTrigger, SelectValue } from '@/components/ui/select';
 import Image from 'next/image';
 import { useUser } from '@/hooks/useUser';
 import { Restaurant } from '@/types/backendEntity';
+import { toast } from 'sonner';
+import PageContainer from '@/components/layout/page-container';
 
 const RestaurantDashboard = () => {
   const router = useRouter();
-  const {user}=useUser()
-  const userId = user?.id;
-  const { updateUser } = useUser();
+  const { user, updateUser } = useUser();
+  const userId = user?._id;
 
-  // Form states
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [status, setStatus] = useState('closed');
@@ -54,28 +51,23 @@ const RestaurantDashboard = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Fetch restaurants on mount and userId change
-  useEffect(() => {
-    const fetchRestaurants = async () => {
-      if (userId) {
-        try {
-          const data = await listRestaurants();
-          console.log({data});
-          if (data.length > 3) {
-            data.length = 3;
-          }
-          setRestaurants(data);
-        } catch (error) {
-          // eslint-disable-next-line no-console
-          console.error('Error fetching restaurants:', error);
-        }
+  const fetchRestaurants = useCallback(async () => {
+    if (userId) {
+      try {
+        const data = await listRestaurants();
+        console.log({ data });
+        setRestaurants(data);
+      } catch (error) {
+        toast.error('Error fetching restaurants.');
+        console.error('Error fetching restaurants:', error);
       }
-    };
-
-    fetchRestaurants();
+    }
   }, [userId]);
 
-  // Reset form state
+  useEffect(() => {
+    fetchRestaurants();
+  }, [fetchRestaurants]);
+
   const resetForm = () => {
     setName('');
     setAddress('');
@@ -85,7 +77,6 @@ const RestaurantDashboard = () => {
     setBusinessHoursClose('');
   };
 
-  // Handle restaurant creation
   const handleCreateRestaurant = async (e: any) => {
     e.preventDefault();
     setIsLoading(true);
@@ -102,202 +93,175 @@ const RestaurantDashboard = () => {
       };
 
       const res = await createRestaurant(restaurantData);
-
       if (res) {
-        // Refresh restaurants list
-        const updatedRestaurants = await listRestaurants();
-        setRestaurants(updatedRestaurants);
-
-        // Close dialog and reset form
+        await fetchRestaurants();
         setIsDialogOpen(false);
         resetForm();
+        toast.success('Restaurant created successfully.');
       } else {
+        toast.error('Failed to create restaurant.');
         throw new Error('Failed to create restaurant');
       }
     } catch (error) {
       console.error('Error creating restaurant:', error);
-      alert('Error creating restaurant. Please try again.');
+      toast.error('Error creating restaurant. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Handle restaurant selection
   const handleSelectRestaurant = async (selectedRestaurant: string) => {
     if (userId) {
       try {
-        const res = await updateProfile(userId, {selectedRestaurant});
+        const res = await updateProfile(userId, { selectedRestaurant });
 
         if (res) {
           updateUser({ selectedRestaurant });
           router.push('/dashboard');
+          toast.success('Restaurant selected successfully.');
         } else {
+          toast.error('Failed to select restaurant.');
           throw new Error('Failed to select restaurant');
         }
       } catch (error) {
         console.error('Error selecting restaurant:', error);
-        alert('Error selecting restaurant. Please try again.');
+        toast.error('Error selecting restaurant. Please try again.');
       }
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white overflow-auto">
-      {/* Hero Section */}
-      <div className="bg-orange-500 py-8 text-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl">
-            <h1 className="mb-4 text-5xl font-bold">Welcome to Potoba</h1>
-            <p className="hidden md:flex mb-8 text-xl text-orange-100">
-              Manage all your restaurants in one place. Streamline operations,
-              boost revenue, and deliver exceptional dining experiences.
+    <div className="min-h-screen overflow-auto bg-gradient-to-b from-background to-muted">
+      <PageContainer scrollable>
+        
+        {/* <div className="container mx-auto px-4 py-8">
+          <div className="mb-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <Card className="bg-card/80 backdrop-blur transition-all hover:shadow-lg">
+              <CardContent className="pt-6">
+                <div className="flex items-center space-x-4">
+                  <div className="rounded-lg bg-green-100 p-3">
+                    <Store className="h-6 w-6 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Active Restaurants</p>
+                    <h3 className="text-2xl font-bold text-foreground">
+                      {restaurants.filter((r) => r.status === 'open').length}
+                    </h3>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card/80 backdrop-blur transition-all hover:shadow-lg">
+              <CardContent className="pt-6">
+                <div className="flex items-center space-x-4">
+                  <div className="rounded-lg bg-blue-100 p-3">
+                    <Users className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Total Staff</p>
+                    <h3 className="text-2xl font-bold text-foreground">124</h3>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card/80 backdrop-blur transition-all hover:shadow-lg">
+              <CardContent className="pt-6">
+                <div className="flex items-center space-x-4">
+                  <div className="rounded-lg bg-yellow-100 p-3">
+                    <IndianRupeeIcon className="h-6 w-6 text-yellow-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Monthly Revenue</p>
+                    <h3 className="text-2xl font-bold text-foreground">₹45.2K</h3>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card/80 backdrop-blur transition-all hover:shadow-lg">
+              <CardContent className="pt-6">
+                <div className="flex items-center space-x-4">
+                  <div className="rounded-lg bg-purple-100 p-3">
+                    <TrendingUp className="h-6 w-6 text-purple-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Growth Rate</p>
+                    <h3 className="text-2xl font-bold text-foreground">+12.5%</</h3>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div> */}
+<div>
+          <div className="mb-8">
+            <h2 className="mb-2 text-3xl font-bold text-foreground">
+              Your Restaurants
+            </h2>
+            <p className="mb-6 text-muted-foreground">
+              Select a restaurant to manage operations
             </p>
-            <Button
-              className="bg-white text-orange-900 hover:bg-orange-100"
+          </div>
+
+          <div className="flex flex-wrap gap-6 overflow-auto">
+            <Card
+              className="group w-[320px] cursor-pointer border-2 border-dashed border-muted-foreground bg-card/50 transition-all duration-300 hover:border-primary hover:shadow-xl"
               onClick={() => setIsDialogOpen(true)}
-              disabled={!userId}
             >
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Add New Restaurant
-            </Button>
+              <CardContent className="flex h-full min-h-[300px] flex-col items-center justify-center">
+                <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 transition-colors duration-300 group-hover:bg-primary/20">
+                  <PlusCircle className="h-10 w-10 text-primary" />
+                </div>
+                <h3 className="mb-3 text-2xl font-semibold text-foreground">
+                  Add New Restaurant
+                </h3>
+                <p className="max-w-xs text-center text-muted-foreground">
+                  Start managing a new location and grow your business
+                </p>
+              </CardContent>
+            </Card>
+
+            {restaurants?.map((restaurant) => (
+              <Card
+                key={restaurant._id!}
+                className="group h-[300px] w-full overflow-hidden bg-card transition-all duration-300 hover:shadow-xl sm:w-[320px]"
+                onClick={() => handleSelectRestaurant(restaurant._id)}
+              >
+                <CardHeader className="relative p-0 ">
+                  <Image
+                    src="https://plus.unsplash.com/premium_photo-1661883237884-263e8de8869b?q=80&w=2089&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    alt={restaurant.name!}
+                    width={200}
+                    height={200}
+                    className="h-[180px] w-full rounded-t-lg object-cover transition-all group-hover:brightness-90"
+                  />
+                  <div className="absolute right-2 top-2">
+                    <Button
+                      variant="secondary"
+                      size="icon"
+                      className="bg-white/90 hover:bg-white"
+                    >
+                      <Settings className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="pb-3 pt-2">
+                  <h3 className="mb-2 text-center text-2xl font-semibold text-foreground">
+                    {restaurant.name}
+                  </h3>
+                </CardContent>
+                <CardFooter className="bg-muted">
+                  <Button className="w-full bg-primary hover:bg-primary-dark">
+                    <Store className="mr-2 h-4 w-4" />
+                    Manage Restaurant
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
           </div>
         </div>
-      </div>
-
-      <div className="container max-h-lvh mx-auto overflow-auto px-4 py-8">
-        {/* Stats Overview */}
-        {/* Stats Cards with Animation */}
-        <div className="mb-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <Card className="bg-white/80 backdrop-blur transition-all hover:shadow-lg">
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-4">
-                <div className="rounded-lg bg-green-100 p-3">
-                  <Store className="h-6 w-6 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-zinc-600">Active Restaurants</p>
-                  <h3 className="text-2xl font-bold text-zinc-900">
-                    {restaurants.filter((r) => r.status === 'open').length}
-                  </h3>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/80 backdrop-blur transition-all hover:shadow-lg">
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-4">
-                <div className="rounded-lg bg-blue-100 p-3">
-                  <Users className="h-6 w-6 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-zinc-600">Total Staff</p>
-                  <h3 className="text-2xl font-bold text-zinc-900">124</h3>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/80 backdrop-blur transition-all hover:shadow-lg">
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-4">
-                <div className="rounded-lg bg-yellow-100 p-3">
-                  <IndianRupeeIcon className="h-6 w-6 text-yellow-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-zinc-600">Monthly Revenue</p>
-                  <h3 className="text-2xl font-bold text-zinc-900">₹45.2K</h3>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/80 backdrop-blur transition-all hover:shadow-lg">
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-4">
-                <div className="rounded-lg bg-purple-100 p-3">
-                  <TrendingUp className="h-6 w-6 text-purple-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-zinc-600">Growth Rate</p>
-                  <h3 className="text-2xl font-bold text-zinc-900">+12.5%</h3>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Restaurants Grid */}
-        <div className="mb-8">
-          <h2 className="mb-2 text-3xl font-bold text-zinc-900">
-            Your Restaurants
-          </h2>
-          <p className="mb-6 text-zinc-600">
-            Select a restaurant to manage operations
-          </p>
-        </div>
-
-        <div className="flex flex-wrap gap-6 overflow-auto">
-          {/* Add New Restaurant Card */}
-          <Card
-            className="group w-[340px] cursor-pointer border-2 border-dashed border-zinc-300 bg-white/50 transition-all duration-300 hover:border-orange-300 hover:shadow-xl"
-            onClick={() => setIsDialogOpen(true)}
-          >
-            <CardContent className="flex h-full min-h-[300px] flex-col items-center justify-center">
-              <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-orange-100 transition-colors duration-300 group-hover:bg-orange-200">
-                <PlusCircle className="h-10 w-10 text-orange-600" />
-              </div>
-              <h3 className="mb-3 text-2xl font-semibold text-zinc-900">
-                Add New Restaurant
-              </h3>
-              <p className="max-w-xs text-center text-zinc-600">
-                Start managing a new location and grow your business
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Existing Restaurant Cards */}
-          {restaurants?.map((restaurant) => (
-            <Card
-              key={restaurant._id!}
-              className="group h-[300px] w-full sm:w-[340px] overflow-hidden bg-white transition-all duration-300 hover:shadow-xl"
-              onClick={() => handleSelectRestaurant(restaurant._id)}
-            >
-              <CardHeader className="relative p-0 ">
-                <Image
-                  src="https://plus.unsplash.com/premium_photo-1661883237884-263e8de8869b?q=80&w=2089&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                  alt={restaurant.name!}
-                  width={200}
-                  height={200}
-                  className="h-[180px] w-full rounded-t-lg object-cover transition-all group-hover:brightness-90"
-                />
-                <div className="absolute right-2 top-2">
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    className="bg-white/90 hover:bg-white"
-                  >
-                    <Settings className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="pb-3 pt-2">
-                <h3 className="mb-2 text-center text-2xl font-semibold text-zinc-900">
-                  {restaurant.name}
-                </h3>
-              </CardContent>
-              <CardFooter className="bg-zinc-50">
-                <Button className="w-full bg-orange-600 hover:bg-orange-700">
-                  <Store className="mr-2 h-4 w-4" />
-                  Manage Restaurant
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-      </div>
-
-      {/* Create Restaurant Modal */}
+      </PageContainer>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
@@ -387,7 +351,7 @@ const RestaurantDashboard = () => {
               </Button>
               <Button
                 type="submit"
-                className="bg-orange-600 hover:bg-orange-700"
+                className="bg-primary hover:bg-primary-dark"
                 disabled={isLoading}
               >
                 {isLoading ? 'Creating...' : 'Create Restaurant'}

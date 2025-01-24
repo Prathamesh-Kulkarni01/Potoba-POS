@@ -33,7 +33,9 @@ export default function DashboardLayout({
         <SidebarInset>
           <Header />
           {/* page main content */}
+          <div className='flex-1  max-h-[93vh] h-5 overflow-hidden'>
           {children}
+          </div>
           {/* page main content ends */}
         </SidebarInset>
       </SidebarProvider>

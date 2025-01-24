@@ -83,9 +83,9 @@ export default function UserAuthForm() {
     startTransition(async () => {
       const res = await loginOwner(data);
       if (res?.error) {
-        toast.error('Invalid credentials or error');
+        toast.error('Invalid credentials or error occurred.');
       } else {
-        toast.success('Signed In Successfully!');
+        toast.success('Signed in successfully!');
         router.push('/dashboard');
       }
     });
@@ -105,7 +105,7 @@ export default function UserAuthForm() {
         throw new Error('Registration failed');
       }
 
-      toast.success(`Registered Successfully!${response.token}`);
+      toast.success('Registered successfully!');
       setIsRegistering(false); // Show login form after successful registration
       loginForm.reset(); // Reset login form to clear any previous data
     } catch (error) {

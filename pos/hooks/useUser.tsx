@@ -51,7 +51,7 @@ export const UserProvider = ({
     };
 
     verifyUserAndToken();
-  }, [token, user]);
+  }, [token]);
 
   const updateUser = useCallback((info: any) => {
     setUser((prevUser: any | null) => (prevUser ? { ...prevUser, ...info } : { ...info }));
