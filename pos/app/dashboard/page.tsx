@@ -12,7 +12,7 @@ export default function Dashboard() {
       if (!token) {
         router.push('/');
       } else if (!user?.selectedRestaurant) {
-        router.push('/restaurants/onboard');
+        router.push('/dashboard/restaurants');
       } else {
         router.push('/dashboard/overview');
       }
