@@ -6,9 +6,17 @@ async function handleLogin(endpoint: string, body: any) {
   console.log("login started")
   const response = await post(endpoint, body);
   if (response.token) {
-    cookies().set(process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token', response.token);
+    // Set cookie using document.cookie on client side
+    document.cookie = `${process.env.NODE_ENV === 'production'
+      ? '__Secure-next-auth.session-token'
+      : 'next-auth.session-token'}=${response.token}; path=/; ${
+      process.env.NODE_ENV === 'production' ? 'Secure; ' : ''
+    }HttpOnly; SameSite=Lax; Max-Age=604800`;
+
+    console.log("Token saved as cookie on client-side.");
   }
-  console.log({response})
+
+  console.log({ response });
   return response;
 }
 
