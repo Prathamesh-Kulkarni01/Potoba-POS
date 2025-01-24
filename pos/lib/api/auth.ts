@@ -1,15 +1,20 @@
 "use client";
 import { get, post, put } from '../services/apiService';
+import { cookies } from 'next/headers';
 
 async function handleLogin(endpoint: string, body: any) {
   console.log("login started")
   const response = await post(endpoint, body);
   if (response.token) {
+    console.log("Token received:", response.token);
     cookies().set(
       process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token',
       response.token,
       { httpOnly: true, secure: process.env.NODE_ENV === 'production', path: '/', sameSite: 'strict' }
     );
+    console.log("Cookie set successfully");
+  } else {
+    console.log("No token received");
   }
 
   console.log({ response });
