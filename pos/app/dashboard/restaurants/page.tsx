@@ -133,68 +133,7 @@ const RestaurantDashboard = () => {
   return (
     <div className="min-h-screen overflow-auto bg-gradient-to-b from-background to-muted">
       <PageContainer scrollable>
-        
-        {/* <div className="container mx-auto px-4 py-8">
-          <div className="mb-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <Card className="bg-card/80 backdrop-blur transition-all hover:shadow-lg">
-              <CardContent className="pt-6">
-                <div className="flex items-center space-x-4">
-                  <div className="rounded-lg bg-green-100 p-3">
-                    <Store className="h-6 w-6 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Active Restaurants</p>
-                    <h3 className="text-2xl font-bold text-foreground">
-                      {restaurants.filter((r) => r.status === 'open').length}
-                    </h3>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-card/80 backdrop-blur transition-all hover:shadow-lg">
-              <CardContent className="pt-6">
-                <div className="flex items-center space-x-4">
-                  <div className="rounded-lg bg-blue-100 p-3">
-                    <Users className="h-6 w-6 text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total Staff</p>
-                    <h3 className="text-2xl font-bold text-foreground">124</h3>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-card/80 backdrop-blur transition-all hover:shadow-lg">
-              <CardContent className="pt-6">
-                <div className="flex items-center space-x-4">
-                  <div className="rounded-lg bg-yellow-100 p-3">
-                    <IndianRupeeIcon className="h-6 w-6 text-yellow-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Monthly Revenue</p>
-                    <h3 className="text-2xl font-bold text-foreground">₹45.2K</h3>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-card/80 backdrop-blur transition-all hover:shadow-lg">
-              <CardContent className="pt-6">
-                <div className="flex items-center space-x-4">
-                  <div className="rounded-lg bg-purple-100 p-3">
-                    <TrendingUp className="h-6 w-6 text-purple-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Growth Rate</p>
-                    <h3 className="text-2xl font-bold text-foreground">+12.5%</</h3>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div> */}
-<div>
+        <div>
           <div className="mb-8">
             <h2 className="mb-2 text-3xl font-bold text-foreground">
               Your Restaurants
@@ -252,7 +191,7 @@ const RestaurantDashboard = () => {
                   </h3>
                 </CardContent>
                 <CardFooter className="bg-muted">
-                  <Button className="w-full bg-primary hover:bg-primary-dark">
+                  <Button className="hover:bg-primary-dark w-full bg-primary">
                     <Store className="mr-2 h-4 w-4" />
                     Manage Restaurant
                   </Button>
@@ -351,7 +290,7 @@ const RestaurantDashboard = () => {
               </Button>
               <Button
                 type="submit"
-                className="bg-primary hover:bg-primary-dark"
+                className="hover:bg-primary-dark bg-primary"
                 disabled={isLoading}
               >
                 {isLoading ? 'Creating...' : 'Create Restaurant'}
