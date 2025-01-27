@@ -111,12 +111,12 @@ const RestaurantDashboard = () => {
   };
 
   const handleSelectRestaurant = async (selectedRestaurant: string) => {
+    console.log({user})
     if (userId) {
       try {
-        const res = await updateProfile(userId, { selectedRestaurant });
-
+        const res = await updateProfile(userId, { id:selectedRestaurant?._id });
         if (res) {
-          updateUser({ selectedRestaurant });
+          updateUser(res);
           router.push('/dashboard');
           toast.success('Restaurant selected successfully.');
         } else {
@@ -185,9 +185,9 @@ const RestaurantDashboard = () => {
                     </Button>
                   </div>
                 </CardHeader>
-                <CardContent className="pb-3 pt-2">
-                  <h3 className="mb-2 text-center text-2xl font-semibold text-foreground">
-                    {restaurant.name}
+                <CardContent className="pb-3 pt-2  bg-muted">
+                  <h3 className="mb-2 text-center text-2xl font-semibold ">
+                    {restaurant.name}g
                   </h3>
                 </CardContent>
                 <CardFooter className="bg-muted">

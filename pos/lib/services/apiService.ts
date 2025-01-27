@@ -18,12 +18,12 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}) {
     ...options,
     headers: { ...authHeaders, ...options.headers }
   });
-
   if (!response.ok) {
+    return null;
     // throw new Error(`API request failed: ${response.statusText}`);
   }
-
-  return await response.json();
+  
+  return  response.json();
 }
 
 export async function post(endpoint: string, body: any) {
@@ -41,7 +41,7 @@ export async function get(endpoint: string) {
 
 export async function put(endpoint: string, body: any) {
   return fetchAPI(endpoint, {
-    method: 'PUT',
+    method: 'PATCH',
     body: JSON.stringify(body)
   });
 }
