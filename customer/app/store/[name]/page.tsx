@@ -8,6 +8,7 @@ interface StoreData {
   name: string;
   title: string;
   description: string;
+  html?:string,
   theme: {
     primary: string;
     secondary: string;
@@ -20,7 +21,7 @@ interface StoreData {
   }>;
 }
 
-const mockStores: Record<string, StoreData> = {
+export const mockStores: Record<string, StoreData> = {
   giftshop: {
     name: 'giftshop',
     title: 'Premium Gift Shop',
@@ -39,6 +40,7 @@ const mockStores: Record<string, StoreData> = {
     name: 'handmade',
     title: 'Handmade Crafts',
     description: 'Unique handcrafted gifts made with love',
+    html:"Welcome to home page ",
     theme: {
       primary: '#059669',
       secondary: '#047857',
@@ -100,32 +102,7 @@ export default function StorePage() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {store.products.map((product) => (
-            <div key={product.id} className="bg-white rounded-lg shadow-lg overflow-hidden">
-              <div className="aspect-w-3 aspect-h-2">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-64 object-cover"
-                />
-              </div>
-              <div className="p-6">
-                <h3 className="text-lg font-semibold" style={{ color: store.theme.primary }}>
-                  {product.name}
-                </h3>
-                <p className="mt-2 text-gray-600">${product.price.toFixed(2)}</p>
-                <button
-                  className="mt-4 w-full py-2 px-4 rounded-md text-white flex items-center justify-center space-x-2"
-                  style={{ backgroundColor: store.theme.primary }}
-                >
-                  <ShoppingBag className="h-5 w-5" />
-                  <span>Add to Cart</span>
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+       {store.html||"No Html"}
       </main>
 
       {/* Footer */}

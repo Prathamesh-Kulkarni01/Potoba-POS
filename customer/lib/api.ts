@@ -79,3 +79,66 @@ export async function createSubdomain(name: string): Promise<{ success: boolean 
   // For now, we'll just return success
   return { success: true };
 }
+
+
+
+//ORDERS
+interface OrderItem {
+  id: number;
+  name: string;
+  price: number;
+}
+
+interface Order {
+  orderId: number;
+  tableId: number;
+  restaurant: string;
+  items: OrderItem[];
+}
+
+let orders: Order[] = [
+  {
+    orderId: 1,
+    tableId: 2,
+    restaurant: 'Pizza Place',
+    items: [
+      { id: 1, name: 'Pizza', price: 12.99 },
+      { id: 2, name: 'Coke', price: 1.99 },
+    ],
+  },
+];
+
+export async function getOrders(): Promise<Order[]> {
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  return orders;
+}
+
+
+export async function addOrder(newOrder: Order): Promise<Order> {
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  if (orders.some((order) => order.orderId === newOrder.orderId)) {
+    throw new Error(`Order with ID ${newOrder.orderId} already exists`);
+  }
+  orders.push(newOrder);
+  return newOrder;
+}
+
+export async function updateOrder(orderId: number, updatedData: Partial<Order>): Promise<Order> {
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  const orderIndex = orders.findIndex((order) => order.orderId === orderId);
+  if (orderIndex === -1) {
+    throw new Error(`Order with ID ${orderId} not found`);
+  }
+  orders[orderIndex] = { ...orders[orderIndex], ...updatedData };
+  return orders[orderIndex];
+}
+
+export async function deleteOrder(orderId: number): Promise<{ success: boolean }> {
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  const orderIndex = orders.findIndex((order) => order.orderId === orderId);
+  if (orderIndex === -1) {
+    throw new Error(`Order with ID ${orderId} not found`);
+  }
+  orders.splice(orderIndex, 1);
+  return { success: true };
+}
